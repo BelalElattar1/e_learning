@@ -57,7 +57,7 @@ class PasswordReset extends Controller
         $validator = Validator::make($request->all(), [
             'email'     => 'required|string|email|max:255|exists:password_reset_codes,email',
             'code'      => 'required|string|exists:password_reset_codes,code',
-            'password'  => 'required|string|min:6',
+            'password'  => 'required|string|min:6|confirmed',
         ]);
 
         if($validator->fails()){

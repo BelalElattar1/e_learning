@@ -3,7 +3,12 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     JWTAuthController,
-    PasswordReset
+    PasswordReset,
+};
+
+use App\Models\{
+    AcademicYear,
+    Mayor
 };
 
 Route::group(['middleware' => 'JwtAuth'], function () {
@@ -24,3 +29,12 @@ Route::post('login', [JWTAuthController::class, 'login']);
 Route::post('forget_password', [PasswordReset::class, 'send_reset_code']);
 Route::post('reset_password', [PasswordReset::class, 'reset_password']);
 
+// AcademicYear Controller
+Route::get('academic_years/index', function () {
+    return AcademicYear::all();
+});
+
+// AcademicYear Controller
+Route::get('mayors/index', function () {
+    return Mayor::all();
+});

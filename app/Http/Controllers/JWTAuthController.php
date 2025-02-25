@@ -20,7 +20,7 @@ class JWTAuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name'         => 'required|string|max:255',
             'email'        => 'required|string|email|max:255|unique:users',
-            'password'     => 'required|string|min:6',
+            'password'     => 'required|string|min:6||confirmed',
             'phone_number' => ['required', 'regex:/^(010|011|012|015)[0-9]{8}$/'],
             'father_phone' => ['required', 'regex:/^(010|011|012|015)[0-9]{8}$/'],
             'mother_phone' => ['required', 'regex:/^(010|011|012|015)[0-9]{8}$/'],
