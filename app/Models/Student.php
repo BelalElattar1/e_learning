@@ -18,4 +18,12 @@ class Student extends Model
         'academic_id',
         'card_photo'
     ];
+
+    public function mayor() {
+        return $this->belongsTo(Mayor::class);
+    }
+
+    public function academic_year() {
+        return $this->belongsTo(AcademicYear::class);
+    }
 }

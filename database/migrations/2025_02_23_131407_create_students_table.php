@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('school_name');
             $table->string('father_job');
             $table->text('card_photo');
-            $table->enum('gender', ['male', 'female']);
             $table->foreignId('user_id')->constrained('users', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('mayor_id')->constrained('mayors', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('academic_id')->constrained('academic_years', 'id')->cascadeOnDelete()->cascadeOnUpdate();

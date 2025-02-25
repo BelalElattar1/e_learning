@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\DB;
 
 class JWTAuthController extends Controller
@@ -46,9 +47,10 @@ class JWTAuthController extends Controller
             DB::beginTransaction();
 
                 $user = User::create([
-                    'name' => $request->get('name'),
-                    'email' => $request->get('email'),
+                    'name'     => $request->get('name'),
+                    'email'    => $request->get('email'),
                     'password' => Hash::make($request->get('password')),
+                    'gender'   => $request->gender
                 ]);
         
                 Student::Create([
@@ -58,19 +60,17 @@ class JWTAuthController extends Controller
                     'school_name'  => $request->school_name,
                     'father_job'   => $request->father_job,
                     'card_photo'   => $request->card_photo,
-                    'gender'       => $request->gender,
                     'mayor_id'     => $request->mayor_id,
                     'academic_id'  => $request->academic_id,
                     'user_id'      => $user->id
                 ]);
 
-                $token = JWTAuth::fromUser($user);
+                $user->assignRole('student');
 
             DB::commit();
 
             return response()->json([
-                'Message' => 'Registerd Suc',
-                'Token' => $token
+                'Message' => 'The account has been created successfully. You can contact support to activate the account'
             ], 201);
 
         } catch (Exception $e) {
@@ -96,6 +96,10 @@ class JWTAuthController extends Controller
             // Get the authenticated user.
             $user = auth()->user();
 
+            if(!$user->is_active) {
+                return response()->json(['Message' => 'This account is not activated. You can contact support'], 403);
+            }
+
             // (optional) Attach the role to the token.
             $token = JWTAuth::claims(['role' => $user->role])->fromUser($user);
 
@@ -116,7 +120,43 @@ class JWTAuthController extends Controller
             return response()->json(['error' => 'Invalid token'], 400);
         }
 
-        return response()->json(compact('user'));
+        $user = new UserResource($user);
+        return response()->json([
+            'data' => $user,
+            'Message' => 'User data retrieved successfully.'
+        ]);
+    }
+
+    public function get_students_inactive() {
+
+        $users = User::where('is_active', 0)->with('student', 'academic_year', 'mayor')->get();
+        $users = UserResource::collection($users);
+        if($users) {
+
+            return response()->json([
+                'data' => $users,
+                'Massege' => 'All students have been successfully recruited'
+            ]);
+
+        } else {
+
+            return response()->json([
+                'Message' => 'There are no inactive students'
+            ], 404);
+
+        }
+
+    }
+
+    public function student_activation($id) {
+
+        User::findOrFail($id)->update([
+            'is_active' => 1
+        ]);
+        return response()->json([
+            'Message' => 'تم تفعيل هذا الطالب بنجاح'
+        ], 200);
+
     }
 
     // User logout

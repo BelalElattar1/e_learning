@@ -8,7 +8,6 @@ class Teacher extends Model
 {
     protected $fillable = [
         'phone_number',
-        'approve',
         'user_id',
         'material_id'
     ];

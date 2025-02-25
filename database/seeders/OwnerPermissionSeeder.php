@@ -17,7 +17,6 @@ class OwnerPermissionSeeder extends Seeder
     public function run(): void
     {
 
-        $role = Role::create(['name' => 'owner']);
         $permissions = [
 
             // Manage Admins
@@ -48,15 +47,17 @@ class OwnerPermissionSeeder extends Seeder
 
         }
 
-        $role->syncPermissions($permissions);
-        $user = User::create([
-            'name'     => '',
-            'email'    => '',
-            'password' => Hash::make('password'),
-            'type'     => 'owner'
+        $owner = User::create([
+            'name'       => 'belal',
+            'email'      => 'belal@gmail.com',
+            'password'   => Hash::make('password'),
+            'type'       => 'owner',
+            'is_active' => 1
         ]);
 
-        $user->assignRole('owner');
+        $role = Role::findByName('owner');
+        $role->syncPermissions($permissions);
+        $owner->assignRole('owner');
 
         // $user->hasRole('admin')
         // $user->can('edit articles')

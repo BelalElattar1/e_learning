@@ -34,7 +34,9 @@ class User extends Authenticatable implements JWTSubject
         'email',
         'password',
         'wallet',
-        'type'
+        'type',
+        'gender',
+        'is_active'
     ];
 
     /**
@@ -58,5 +60,9 @@ class User extends Authenticatable implements JWTSubject
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function student() {
+        return $this->hasOne(Student::class);
     }
 }
