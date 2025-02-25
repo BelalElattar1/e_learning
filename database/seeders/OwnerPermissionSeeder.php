@@ -31,6 +31,10 @@ class OwnerPermissionSeeder extends Seeder
             'update_teacher',
             'delete_teacher',
 
+            // Manage User
+            'get_all_students_inactive',
+            'student_activation',
+
             // Manage Materials
             'show_all_materials',
             'create_material',

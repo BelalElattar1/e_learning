@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\StudentResource;
 use Illuminate\Support\Facades\DB;
 
 class JWTAuthController extends Controller
@@ -30,7 +30,7 @@ class JWTAuthController extends Controller
             'card_photo'   => ['required', 'file', 'max:1048576', 'mimes:jpg,jpeg,png'],
             'gender'       => ['required', 'in:male,female'],
             'mayor_id'     => ['required', 'integer', 'exists:mayors,id'],
-            'academic_id'  => ['required', 'integer', 'exists:academic_years,id'],
+            'academic_year_id'  => ['required', 'integer', 'exists:academic_years,id'],
         ]);
 
         if($validator->fails()){
@@ -59,9 +59,9 @@ class JWTAuthController extends Controller
                     'mother_phone' => $request->mother_phone,
                     'school_name'  => $request->school_name,
                     'father_job'   => $request->father_job,
-                    'card_photo'   => $request->card_photo,
+                    'card_photo'   => $card_photo,
                     'mayor_id'     => $request->mayor_id,
-                    'academic_id'  => $request->academic_id,
+                    'academic_year_id'  => $request->academic_year_id,
                     'user_id'      => $user->id
                 ]);
 
@@ -75,6 +75,7 @@ class JWTAuthController extends Controller
 
         } catch (Exception $e) {
 
+            DB::rollBack();
             return response()->json([
                 'message' => 'Sorry, an error occurred, please try again'
             ], 500);
@@ -103,7 +104,11 @@ class JWTAuthController extends Controller
             // (optional) Attach the role to the token.
             $token = JWTAuth::claims(['role' => $user->role])->fromUser($user);
 
-            return response()->json(compact('token'));
+            return response()->json([
+                'Role' => $user->type,
+                'permissions' => $user->getAllPermissions()->pluck('name'),
+                'Token' => $token
+            ]);
         } catch (JWTException $e) {
             return response()->json(['error' => 'Could not create token'], 500);
         }
@@ -120,17 +125,17 @@ class JWTAuthController extends Controller
             return response()->json(['error' => 'Invalid token'], 400);
         }
 
-        $user = new UserResource($user);
+        $user = new StudentResource($user->load('student.academic_year', 'student.mayor'));
         return response()->json([
-            'data' => $user,
+            'data'    => $user,
             'Message' => 'User data retrieved successfully.'
         ]);
     }
 
-    public function get_students_inactive() {
+    public function get_all_students_inactive() {
 
-        $users = User::where('is_active', 0)->with('student', 'academic_year', 'mayor')->get();
-        $users = UserResource::collection($users);
+        $users = User::where('is_active', 0)->with('student.academic_year', 'student.mayor')->get();
+        $users = StudentResource::collection($users);
         if($users) {
 
             return response()->json([
@@ -154,7 +159,7 @@ class JWTAuthController extends Controller
             'is_active' => 1
         ]);
         return response()->json([
-            'Message' => 'تم تفعيل هذا الطالب بنجاح'
+            'Message' => 'This student has been activated successfully'
         ], 200);
 
     }

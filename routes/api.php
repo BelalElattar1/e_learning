@@ -14,8 +14,10 @@ use App\Models\{
 Route::group(['middleware' => 'JwtAuth'], function () {
 
     // User Auth
-    Route::group(['prefix' => 'auth'], function () {
-        Route::get('/user', [JWTAuthController::class, 'getUser']);
+    Route::group(['prefix' => 'user'], function () {
+        Route::get('/show', [JWTAuthController::class, 'getUser']);
+        Route::get('/get_all_students_inactive', [JWTAuthController::class, 'get_all_students_inactive'])->middleware(['permission:get_all_students_inactive']);
+        Route::get('/student_activation/{id}', [JWTAuthController::class, 'student_activation'])->middleware(['permission:student_activation']);
         Route::post('/logout', [JWTAuthController::class, 'logout']);
     });
 

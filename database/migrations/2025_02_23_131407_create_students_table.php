@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('card_photo');
             $table->foreignId('user_id')->constrained('users', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('mayor_id')->constrained('mayors', 'id')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('academic_id')->constrained('academic_years', 'id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('academic_year_id')->constrained('academic_years', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

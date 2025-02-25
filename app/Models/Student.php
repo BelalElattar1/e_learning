@@ -15,7 +15,7 @@ class Student extends Model
         'gender',
         'user_id',
         'mayor_id',
-        'academic_id',
+        'academic_year_id',
         'card_photo'
     ];
 
