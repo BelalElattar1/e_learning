@@ -27,7 +27,7 @@ class JWTAuthController extends Controller
             'mother_phone' => ['required', 'regex:/^(010|011|012|015)[0-9]{8}$/'],
             'school_name'  => ['required', 'string', 'min:3', 'max:100'],
             'father_job'   => ['required', 'string', 'min:3', 'max:50'],
-            'card_photo'   => ['required', 'file', 'max:1048576', 'mimes:jpg,jpeg,png'],
+            'card_photo'   => ['required', 'file', 'max:1048576', 'mimes:jpg,jpeg,png', 'unique:students'],
             'gender'       => ['required', 'in:male,female'],
             'mayor_id'     => ['required', 'integer', 'exists:mayors,id'],
             'academic_year_id'  => ['required', 'integer', 'exists:academic_years,id'],
@@ -39,7 +39,8 @@ class JWTAuthController extends Controller
 
         if($request->hasfile('card_photo')) {
             $path  = $request->file('card_photo');
-            $card_photo = $path->store('cards', 'public');
+            $card_photo = $path->store('cards', 'private');
+            $card_photo = str_replace('cards/', '', $card_photo);
         }
 
         try {
@@ -130,6 +131,17 @@ class JWTAuthController extends Controller
             'data'    => $user,
             'Message' => 'User data retrieved successfully.'
         ]);
+    }
+
+    public function get_private_image($filename) {
+
+        $path = storage_path('app/private/cards/' . $filename);
+        if (!file_exists($path)) {
+            return response()->json(['error' => 'The Image Not Found'], 404);
+        }
+    
+        return response()->file($path);
+
     }
 
     public function get_all_students_inactive() {

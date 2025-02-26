@@ -17,6 +17,7 @@ Route::group(['middleware' => 'JwtAuth'], function () {
     Route::group(['prefix' => 'user'], function () {
         Route::get('/show', [JWTAuthController::class, 'getUser']);
         Route::get('/get_all_students_inactive', [JWTAuthController::class, 'get_all_students_inactive'])->middleware(['permission:get_all_students_inactive']);
+        Route::get('/get_private_image/{filename}', [JWTAuthController::class, 'get_private_image'])->middleware(['permission:get_all_students_inactive']);
         Route::get('/student_activation/{id}', [JWTAuthController::class, 'student_activation'])->middleware(['permission:student_activation']);
         Route::post('/logout', [JWTAuthController::class, 'logout']);
     });

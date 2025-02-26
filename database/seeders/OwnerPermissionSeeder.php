@@ -34,6 +34,7 @@ class OwnerPermissionSeeder extends Seeder
             // Manage User
             'get_all_students_inactive',
             'student_activation',
+            'get_private_image',
 
             // Manage Materials
             'show_all_materials',
