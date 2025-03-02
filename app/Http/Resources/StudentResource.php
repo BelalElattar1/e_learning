@@ -23,12 +23,12 @@ class StudentResource extends JsonResource
             'father_phone_number' => $this->student->father_phone,  
             'mother_phone_number' => $this->student->mother_phone,  
             'gender'              => $this->gender,  
-            // 'card_photo'          => "/api/get_private_image/" . $this->student->card_photo,  
             'card_photo'          => url('/api/user/get_private_image/' . $this->student->card_photo),  
-            // 'card_photo'          => $this->student->card_photo,  
             'wallet'              => $this->wallet,  
             'year_name'           => $this->student->academic_year->name,  
             'mayor_name'          => $this->student->mayor->name, 
+            'Role'                => $this->type,
+            'permissions'         => $this->getAllPermissions()->pluck('name'),
           ];
 
     }

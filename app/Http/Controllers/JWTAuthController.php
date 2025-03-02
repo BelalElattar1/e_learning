@@ -22,9 +22,9 @@ class JWTAuthController extends Controller
             'name'         => 'required|string|max:255',
             'email'        => 'required|string|email|max:255|unique:users',
             'password'     => 'required|string|min:6||confirmed',
-            'phone_number' => ['required', 'regex:/^(010|011|012|015)[0-9]{8}$/'],
-            'father_phone' => ['required', 'regex:/^(010|011|012|015)[0-9]{8}$/'],
-            'mother_phone' => ['required', 'regex:/^(010|011|012|015)[0-9]{8}$/'],
+            'phone_number' => ['required', 'regex:/^(010|011|012|015)[0-9]{8}$/', 'unique:students'],
+            'father_phone' => ['required', 'regex:/^(010|011|012|015)[0-9]{8}$/', 'unique:students'],
+            'mother_phone' => ['required', 'regex:/^(010|011|012|015)[0-9]{8}$/', 'unique:students'],
             'school_name'  => ['required', 'string', 'min:3', 'max:100'],
             'father_job'   => ['required', 'string', 'min:3', 'max:50'],
             'card_photo'   => ['required', 'file', 'max:1048576', 'mimes:jpg,jpeg,png', 'unique:students'],
@@ -34,7 +34,7 @@ class JWTAuthController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
+            return response()->json($validator->errors(), 400);
         }
 
         if($request->hasfile('card_photo')) {
@@ -88,9 +88,11 @@ class JWTAuthController extends Controller
     // User login
     public function login(Request $request)
     {
+
         $credentials = $request->only('email', 'password');
 
         try {
+
             if (! $token = JWTAuth::attempt($credentials)) {
                 return response()->json(['error' => 'Invalid credentials'], 401);
             }
@@ -106,24 +108,33 @@ class JWTAuthController extends Controller
             $token = JWTAuth::claims(['role' => $user->role])->fromUser($user);
 
             return response()->json([
-                'Role' => $user->type,
+                'Role'        => $user->type,
                 'permissions' => $user->getAllPermissions()->pluck('name'),
                 'Token' => $token
             ]);
+
         } catch (JWTException $e) {
+
             return response()->json(['error' => 'Could not create token'], 500);
+
         }
+
     }
 
     // Get authenticated user
     public function getUser()
     {
+
         try {
+
             if (! $user = JWTAuth::parseToken()->authenticate()) {
                 return response()->json(['error' => 'User not found'], 404);
             }
+
         } catch (JWTException $e) {
+
             return response()->json(['error' => 'Invalid token'], 400);
+
         }
 
         $user = new StudentResource($user->load('student.academic_year', 'student.mayor'));
@@ -131,16 +142,31 @@ class JWTAuthController extends Controller
             'data'    => $user,
             'Message' => 'User data retrieved successfully.'
         ]);
+
     }
 
     public function get_private_image($filename) {
 
-        $path = storage_path('app/private/cards/' . $filename);
-        if (!file_exists($path)) {
-            return response()->json(['error' => 'The Image Not Found'], 404);
+        $student = Student::where('user_id', auth()->user()->id)->where('card_photo', $filename)->first();
+        $owner_or_admin = User::where('id', auth()->user()->id)->where( function ($query) {
+            $query->where('type', 'owner')
+                ->orWhere('type', 'admin');
+        })->first();
+
+        if($student || $owner_or_admin) {
+
+            $path = storage_path('app/private/cards/' . $filename);
+            if (!file_exists($path)) {
+                return response()->json(['error' => 'The Image Not Found'], 404);
+            }
+        
+            return response()->file($path);
+
+        } else {
+
+            return response()->json(['error' => 'Do not play on the site so that your account is not banned'], 404);
+
         }
-    
-        return response()->file($path);
 
     }
 
@@ -148,6 +174,7 @@ class JWTAuthController extends Controller
 
         $users = User::where('is_active', 0)->with('student.academic_year', 'student.mayor')->get();
         $users = StudentResource::collection($users);
+
         if($users) {
 
             return response()->json([
@@ -170,6 +197,7 @@ class JWTAuthController extends Controller
         User::findOrFail($id)->update([
             'is_active' => 1
         ]);
+        
         return response()->json([
             'Message' => 'This student has been activated successfully'
         ], 200);
