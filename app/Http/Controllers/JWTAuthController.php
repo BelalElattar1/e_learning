@@ -2,47 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\User;
 use App\Models\Student;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
-use App\Http\Resources\StudentResource;
 use Illuminate\Support\Facades\DB;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Resources\StudentResource;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use App\Http\Requests\students\StoreStudentRequest;
 
 class JWTAuthController extends Controller
 {
     // User registration
-    public function register(Request $request)
+    public function register(StoreStudentRequest $request)
     {
-
-        $validator = Validator::make($request->all(), [
-            'name'         => 'required|string|max:255',
-            'email'        => 'required|string|email|max:255|unique:users',
-            'password'     => 'required|string|min:6||confirmed',
-            'phone_number' => ['required', 'regex:/^(010|011|012|015)[0-9]{8}$/', 'unique:students'],
-            'father_phone' => ['required', 'regex:/^(010|011|012|015)[0-9]{8}$/', 'unique:students'],
-            'mother_phone' => ['required', 'regex:/^(010|011|012|015)[0-9]{8}$/', 'unique:students'],
-            'school_name'  => ['required', 'string', 'min:3', 'max:100'],
-            'father_job'   => ['required', 'string', 'min:3', 'max:50'],
-            'card_photo'   => ['required', 'file', 'max:1048576', 'mimes:jpg,jpeg,png', 'unique:students'],
-            'gender'       => ['required', 'in:male,female'],
-            'mayor_id'     => ['required', 'integer', 'exists:mayors,id'],
-            'academic_year_id'  => ['required', 'integer', 'exists:academic_years,id'],
-        ]);
-
-        if($validator->fails()){
-            return response()->json($validator->errors(), 400);
-        }
-
-        if($request->hasfile('card_photo')) {
-            $path  = $request->file('card_photo');
-            $card_photo = $path->store('cards', 'private');
-            $card_photo = str_replace('cards/', '', $card_photo);
-        }
-
+        
         try {
 
             DB::beginTransaction();
@@ -60,7 +36,7 @@ class JWTAuthController extends Controller
                     'mother_phone' => $request->mother_phone,
                     'school_name'  => $request->school_name,
                     'father_job'   => $request->father_job,
-                    'card_photo'   => $card_photo,
+                    'card_photo'   => store_image($request->file('card_photo'), 'cards'),
                     'mayor_id'     => $request->mayor_id,
                     'academic_year_id'  => $request->academic_year_id,
                     'user_id'      => $user->id
@@ -145,17 +121,15 @@ class JWTAuthController extends Controller
 
     }
 
-    public function get_private_image($filename) {
+    public function get_private_image($folder, $filename) {
 
-        $student = Student::where('user_id', auth()->user()->id)->where('card_photo', $filename)->first();
-        $owner_or_admin = User::where('id', auth()->user()->id)->where( function ($query) {
-            $query->where('type', 'owner')
-                ->orWhere('type', 'admin');
-        })->first();
+        $user = auth()->user();
+        $student = Student::where('user_id', $user->id)->where('card_photo', $filename)->exists();
+        $owner_or_admin = in_array($user->type, ['admin', 'owner']);
 
         if($student || $owner_or_admin) {
 
-            $path = storage_path('app/private/cards/' . $filename);
+            $path = storage_path('app/private/' . $folder . '/' . $filename);
             if (!file_exists($path)) {
                 return response()->json(['error' => 'The Image Not Found'], 404);
             }

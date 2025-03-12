@@ -4,22 +4,41 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     JWTAuthController,
     PasswordReset,
+    AdminController,
+    TeacherController,
 };
 
 use App\Models\{
     AcademicYear,
+    Material,
     Mayor
 };
 
 Route::group(['middleware' => 'JwtAuth'], function () {
 
-    // User Auth
-    Route::group(['prefix' => 'user'], function () {
-        Route::get('/show', [JWTAuthController::class, 'getUser']);
-        Route::get('/get_all_students_inactive', [JWTAuthController::class, 'get_all_students_inactive'])->middleware(['permission:get_all_students_inactive']);
-        Route::get('/get_private_image/{filename}', [JWTAuthController::class, 'get_private_image'])->middleware(['permission:get_all_students_inactive']);
-        Route::get('/student_activation/{id}', [JWTAuthController::class, 'student_activation'])->middleware(['permission:student_activation']);
-        Route::post('/logout', [JWTAuthController::class, 'logout']);
+    //  User Auth
+    Route::prefix('user')->controller(JWTAuthController::class)->group(function () {
+        Route::get('/show', 'getUser');
+        Route::get('/get_all_students_inactive', 'get_all_students_inactive')->middleware(['permission:get_all_students_inactive']);
+        Route::post('/get_private_image/{folder}/{filename}', 'get_private_image')->middleware(['permission:get_all_students_inactive']);
+        Route::put('/student_activation/{id}', 'student_activation')->middleware(['permission:student_activation']);
+        Route::post('/logout', 'logout');
+    });
+
+    // Admin Controller
+    Route::prefix('admins')->controller(AdminController::class)->group(function () {
+        Route::get('/index', 'index')->middleware(['permission:show_all_admins']);
+        Route::post('/store', 'store')->middleware(['permission:create_admin']);
+        Route::put('/update/{user}', 'update')->middleware(['permission:update_admin']);
+        Route::delete('/destroy/{user}', 'destroy')->middleware(['permission:delete_admin']);
+    });
+
+    // Teacher Controller
+    Route::prefix('teachers')->controller(TeacherController::class)->group(function () {
+        Route::get('/index', 'index')->middleware(['permission:show_all_teachers']);
+        Route::post('/store', 'store')->middleware(['permission:create_teacher']);
+        Route::put('/update/{user}', 'update')->middleware(['permission:update_teacher']);
+        Route::delete('/destroy/{user}', 'destroy')->middleware(['permission:delete_teacher']);
     });
 
 });
@@ -34,10 +53,15 @@ Route::post('reset_password', [PasswordReset::class, 'reset_password']);
 
 // AcademicYear Controller
 Route::get('academic_years/index', function () {
-    return AcademicYear::all();
+    return AcademicYear::pluck('name');
 });
 
-// AcademicYear Controller
+// Mayors Controller
 Route::get('mayors/index', function () {
-    return Mayor::all();
+    return Mayor::pluck('name');
+});
+
+// Materials Controller
+Route::get('materials/index', function () {
+    return Material::pluck('name');
 });

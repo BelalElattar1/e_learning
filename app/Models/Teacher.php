@@ -11,4 +11,12 @@ class Teacher extends Model
         'user_id',
         'material_id'
     ];
+
+    public function subscribes() {
+        $this->belongsTo(Subscribe::class);
+    }
+
+    public function material() {
+        return $this->belongsTo(Material::class);
+    }
 }

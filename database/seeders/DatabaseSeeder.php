@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             OwnerPermissionSeeder::class,
             AcademicYearSeeder::class,
             MayorSeeder::class,
+            MaterialSeeder::class,
         ]);
 
         // User::factory(10)->create();
