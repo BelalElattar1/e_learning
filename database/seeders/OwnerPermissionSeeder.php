@@ -26,7 +26,6 @@ class OwnerPermissionSeeder extends Seeder
             'delete_admin',
 
             // Manage Teachers
-            'show_all_teachers',
             'create_teacher',
             'update_teacher',
             'delete_teacher',
@@ -37,7 +36,6 @@ class OwnerPermissionSeeder extends Seeder
             'get_private_image',
 
             // Manage Materials
-            'show_all_materials',
             'create_material',
             'update_material',
             'delete_material',

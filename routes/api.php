@@ -6,6 +6,7 @@ use App\Http\Controllers\{
     PasswordReset,
     AdminController,
     TeacherController,
+    ImageController,
 };
 
 use App\Models\{
@@ -20,7 +21,6 @@ Route::group(['middleware' => 'JwtAuth'], function () {
     Route::prefix('user')->controller(JWTAuthController::class)->group(function () {
         Route::get('/show', 'getUser');
         Route::get('/get_all_students_inactive', 'get_all_students_inactive')->middleware(['permission:get_all_students_inactive']);
-        Route::post('/get_private_image/{folder}/{filename}', 'get_private_image')->middleware(['permission:get_all_students_inactive']);
         Route::put('/student_activation/{id}', 'student_activation')->middleware(['permission:student_activation']);
         Route::post('/logout', 'logout');
     });
@@ -35,10 +35,14 @@ Route::group(['middleware' => 'JwtAuth'], function () {
 
     // Teacher Controller
     Route::prefix('teachers')->controller(TeacherController::class)->group(function () {
-        Route::get('/index', 'index')->middleware(['permission:show_all_teachers']);
         Route::post('/store', 'store')->middleware(['permission:create_teacher']);
         Route::put('/update/{user}', 'update')->middleware(['permission:update_teacher']);
         Route::delete('/destroy/{user}', 'destroy')->middleware(['permission:delete_teacher']);
+    });
+
+    // Image Controller
+    Route::prefix('images')->controller(ImageController::class)->group(function () {
+        Route::post('/get_private_image/{folder}/{filename}', 'get_private_image');
     });
 
 });
@@ -50,6 +54,9 @@ Route::post('login', [JWTAuthController::class, 'login']);
 // Forget Password
 Route::post('forget_password', [PasswordReset::class, 'send_reset_code']);
 Route::post('reset_password', [PasswordReset::class, 'reset_password']);
+
+// Teacher Controller
+Route::get('teachers/index', [TeacherController::class, 'index']);
 
 // AcademicYear Controller
 Route::get('academic_years/index', function () {

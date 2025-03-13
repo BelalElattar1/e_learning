@@ -121,32 +121,9 @@ class JWTAuthController extends Controller
 
     }
 
-    public function get_private_image($folder, $filename) {
-
-        $user = auth()->user();
-        $student = Student::where('user_id', $user->id)->where('card_photo', $filename)->exists();
-        $owner_or_admin = in_array($user->type, ['admin', 'owner']);
-
-        if($student || $owner_or_admin) {
-
-            $path = storage_path('app/private/' . $folder . '/' . $filename);
-            if (!file_exists($path)) {
-                return response()->json(['error' => 'The Image Not Found'], 404);
-            }
-        
-            return response()->file($path);
-
-        } else {
-
-            return response()->json(['error' => 'Do not play on the site so that your account is not banned'], 404);
-
-        }
-
-    }
-
     public function get_all_students_inactive() {
 
-        $users = User::where('is_active', 0)->with('student.academic_year', 'student.mayor')->get();
+        $users = User::where('is_active', 0)->where('type', 'student')->with('student.academic_year', 'student.mayor')->get();
         $users = StudentResource::collection($users);
 
         if($users) {

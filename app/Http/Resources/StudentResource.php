@@ -22,8 +22,8 @@ class StudentResource extends JsonResource
             'phone_number'        => $this->student->phone_number,  
             'father_phone_number' => $this->student->father_phone,  
             'mother_phone_number' => $this->student->mother_phone,  
-            'gender'              => $this->gender,  
-            'card_photo'          => url('/api/user/get_private_image/cards/' . $this->student->card_photo),  
+            'gender'              => $this->gender,   
+            'card_photo'          => url('/api/images/get_private_image/cards/' . $this->student->card_photo),  
             'wallet'              => $this->wallet,  
             'year_name'           => $this->student->academic_year->name,  
             'mayor_name'          => $this->student->mayor->name
