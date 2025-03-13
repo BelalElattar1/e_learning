@@ -13,6 +13,7 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
+
         $roles = [
             'owner',
             'admin',
@@ -25,5 +26,6 @@ class RoleSeeder extends Seeder
                 'name' => $role
             ]);
         }
+        
     }
 }

@@ -4,11 +4,11 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
 
-class OwnerPermissionSeeder extends Seeder
+class AdminPermissionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -20,9 +20,6 @@ class OwnerPermissionSeeder extends Seeder
 
             // Manage Admins
             'show_all_admins',
-            'create_admin',
-            'update_admin',
-            'delete_admin',
 
             // Manage Teachers
             'create_teacher',
@@ -40,22 +37,17 @@ class OwnerPermissionSeeder extends Seeder
             
         ];
 
-        $owner = User::create([
-            'name'       => 'belal',
-            'email'      => 'belal@gmail.com',
+        $admin = User::create([
+            'name'       => 'ahmed',
+            'email'      => 'ahmed@gmail.com',
             'password'   => Hash::make('password'),
-            'type'       => 'owner',
+            'type'       => 'admin',
             'is_active' => 1
         ]);
 
-        $role = Role::findByName('owner');
+        $role = Role::findByName('admin');
         $role->syncPermissions($permissions);
-        $owner->assignRole('owner');
-
-        // $user->hasRole('admin')
-        // $user->can('edit articles')
-        // $permission->removeRole($role);
-        // $role->revokePermissionTo($permission);
+        $admin->assignRole('admin');
 
     }
 }
