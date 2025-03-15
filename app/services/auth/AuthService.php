@@ -15,31 +15,31 @@ class AuthService {
         ];
 
         if (! $token = JWTAuth::attempt($credentials)) {
-            return response()->json(['error' => 'Invalid credentials'], 401);
+            throw new Exception('Invalid credentials'); 
         }
 
         // Get the authenticated user.
         $user = auth()->user();
 
         if(!$user->is_active) {
-            return response()->json(['Message' => 'This account is not activated. You can contact support'], 403);
+            throw new Exception('This account is not activated. You can contact support'); 
         }
 
         $token = JWTAuth::fromUser($user);
 
-        return response()->json([
+        return [
             'Role'        => $user->type,
             'permissions' => $user->getAllPermissions()->pluck('name'),
             'Token'       => $token
-        ]);
+        ];
 
     }
 
     public function logout()
     {
+
         JWTAuth::invalidate(JWTAuth::getToken());
 
-        return response()->json(['message' => 'Successfully logged out']);
     }
 
 }

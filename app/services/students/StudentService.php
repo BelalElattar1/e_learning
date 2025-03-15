@@ -23,10 +23,6 @@ class StudentService {
 
         });
 
-        return response()->json([
-            'Message' => 'The account has been created successfully. You can contact support to activate the account'
-        ], 201);
-
     }
 
     private function create_user($request) {
@@ -61,20 +57,17 @@ class StudentService {
         try {
 
             if (! $user = JWTAuth::parseToken()->authenticate()) {
-                return response()->json(['error' => 'User not found'], 404);
+                throw new Exception('User not found');
             }
+
+            $user = new StudentResource($user->load('student.academic_year', 'student.mayor'));
+            return $user;
 
         } catch (JWTException $e) {
 
-            return response()->json(['error' => 'Invalid token'], 400);
+            throw new Exception('Invalid token'); 
 
         }
-
-        $user = new StudentResource($user->load('student.academic_year', 'student.mayor'));
-        return response()->json([
-            'data'    => $user,
-            'Message' => 'User data retrieved successfully.'
-        ]);
 
     }
 
@@ -85,30 +78,21 @@ class StudentService {
 
         if(count($users) > 0) {
 
-            return response()->json([
-                'data' => $users,
-                'Massege' => 'All students have been successfully recruited'
-            ]);
+            return $users;
 
         } else {
 
-            return response()->json([
-                'Message' => 'There are no inactive students'
-            ], 404);
+            throw new Exception('There are no inactive students');
 
-        }
+        }  
 
     }
 
     public function student_activation($id) {
-
+                
         User::findOrFail($id)->update([
             'is_active' => 1
         ]);
-        
-        return response()->json([
-            'Message' => 'This student has been activated successfully'
-        ], 200);
 
     }
 

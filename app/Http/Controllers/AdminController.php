@@ -2,62 +2,89 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\User;
+use App\ResponseTrait;
+use App\services\admins\AdminService;
 use App\Http\Requests\admins\StoreAdminRequest;
 use App\Http\Requests\admins\UpdateAdminRequest;
-use Illuminate\Support\Facades\Hash;
-use App\Http\Resources\AdminResource;
-use App\ResponseTrait;
 
 class AdminController extends Controller
 {    
     use ResponseTrait;
 
+    public $admin_service;
+
+    public function __construct(AdminService $admin_service)
+    {
+        $this->admin_service = $admin_service;
+    }
+
     public function index() {
 
-        $admins = User::where('type', 'admin')->get();
-        $admins = AdminResource::collection($admins);
-        return $this->response('Show All Admin Suc', 201, $admins);
+        try {
+
+            $data = $this->admin_service->index();
+            return $this->response('Show All Admin Suc', 201, $data);
+
+        } catch(Exception $e) {
+
+            return response()->json(
+                ['error' => $e->getMessage()
+            ], 500);
+
+        }
 
     }
 
     public function store(StoreAdminRequest $request) {
 
-        $admin = User::create([
-            'name'      => $request->name,
-            'email'     => $request->email,
-            'password'  => Hash::make($request->password),
-            'gender'    => $request->gender,
-            'type'      => 'admin',
-            'is_active' => $request->is_active
-        ]);
-        $admin->assignRole('admin');
+        try {
 
-        return $this->response('The admin has been created successfullyc');
+            $this->admin_service->store($request->all());
+            return $this->response('The admin has been created successfullyc');
+
+        } catch(Exception $e) {
+
+            return response()->json(
+                ['error' => $e->getMessage()
+            ], 500);
+
+        }
 
     }
 
     public function update(UpdateAdminRequest $request, User $user) {
 
-        $user = User::where('id', $user->id)->where('type', 'admin')->first();
-        $user->update([
-            'name'      => $request->name,
-            'email'     => $request->email,
-            'password'  => Hash::make($request->password),
-            'gender'    => $request->gender,
-            'type'      => 'admin',
-            'is_active' => $request->is_active
-        ]);
+        try {
 
-        return $this->response('The admin has been Updated successfullyc');
+            $this->admin_service->update($request->all(), $user);
+            return $this->response('The admin has been Updated successfullyc');
+
+        } catch(Exception $e) {
+
+            return response()->json(
+                ['error' => $e->getMessage()
+            ], 500);
+
+        }
 
     }
 
     public function destroy(User $user) {
 
-        $user = User::where('id', $user->id)->where('type', 'admin')->first();
-        $user->delete();
-        return $this->response('The admin has been successfully deleted');
+        try {
+
+            $this->admin_service->destroy($user);
+            return $this->response('The admin has been Deleted successfullyc');
+
+        } catch(Exception $e) {
+
+            return response()->json(
+                ['error' => $e->getMessage()
+            ], 500);
+
+        }
 
     }
 

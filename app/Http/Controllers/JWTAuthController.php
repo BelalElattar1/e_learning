@@ -27,12 +27,15 @@ class JWTAuthController extends Controller
         
         try {
 
-            return $this->student_service->register_student($request->all());
+            $this->student_service->register_student($request->all());
+            return response()->json([
+                'Message' => 'The account has been created successfully. You can contact support to activate the account'
+            ], 201);
         
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return response()->json([
-                'Message' => 'Sorry, an error occurred. Please try again.'
+                'Message' => $e->getMessage()
             ], 500); 
 
         }
@@ -45,11 +48,16 @@ class JWTAuthController extends Controller
 
         try {
 
-            return $this->auth_service->login($request->all());
+            $data =  $this->auth_service->login($request->all());
+            return response()->json([
+                'data' => $data
+            ]);
 
         } catch (Exception $e) {
 
-            return response()->json(['error' => 'Sorry, an error occurred. Please try again.'], 500);
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
 
         }
 
@@ -61,11 +69,17 @@ class JWTAuthController extends Controller
 
         try {
 
-            return $this->student_service->get_student();
+            $data = $this->student_service->get_student();
+            return response()->json([
+                'data'    => $data,
+                'Message' => 'User data retrieved successfully.'
+            ]);
 
         } catch (Exception $e) {
 
-            return response()->json(['error' => 'Sorry, an error occurred. Please try again.'], 500);
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
 
         }
 
@@ -75,11 +89,17 @@ class JWTAuthController extends Controller
 
         try {
 
-            return $this->student_service->get_all_students_inactive();
+            $data = $this->student_service->get_all_students_inactive();
+            return response()->json([
+                'data' => $data,
+                'Massege' => 'All students have been successfully recruited'
+            ]);
 
         } catch (Exception $e) {
 
-            return response()->json(['error' => 'Sorry, an error occurred. Please try again.'], 500);
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
 
         }
 
@@ -90,11 +110,17 @@ class JWTAuthController extends Controller
 
         try {
 
-            return $this->student_service->student_activation($id);
+            $this->student_service->student_activation($id);
+            return response()->json([
+                'Message' => 'This student has been activated successfully'
+            ], 200);
+    
 
         } catch (Exception $e) {
 
-            return response()->json(['error' => 'Sorry, an error occurred. Please try again.'], 500);
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
 
         }
 
@@ -106,11 +132,14 @@ class JWTAuthController extends Controller
 
         try {
 
-            return $this->auth_service->logout();
+            $this->auth_service->logout();
+            return response()->json(['message' => 'Successfully logged out']); 
 
         } catch (Exception $e) {
 
-            return response()->json(['error' => 'Sorry, an error occurred. Please try again.'], 500);
+            return response()->json(
+                ['error' => $e->getMessage()
+            ], 500);
 
         }
 
