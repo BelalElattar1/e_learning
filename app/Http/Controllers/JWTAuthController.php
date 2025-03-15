@@ -3,60 +3,38 @@
 namespace App\Http\Controllers;
 
 use Exception;
-use App\Models\User;
-use App\Models\Student;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Illuminate\Support\Facades\Hash;
-use App\Http\Resources\StudentResource;
-use Tymon\JWTAuth\Exceptions\JWTException;
+use App\services\auth\AuthService;
+use App\services\students\StudentService;
 use App\Http\Requests\students\StoreStudentRequest;
 
 class JWTAuthController extends Controller
 {
+    public $student_service; 
+    public $auth_service; 
+
+    public function __construct(StudentService $student_service, AuthService $auth_service) 
+    {
+        
+        $this->auth_service    = $auth_service;
+        $this->student_service = $student_service;
+
+    }
+
     // User registration
     public function register(StoreStudentRequest $request)
     {
         
         try {
 
-            DB::beginTransaction();
-
-                $user = User::create([
-                    'name'     => $request->get('name'),
-                    'email'    => $request->get('email'),
-                    'password' => Hash::make($request->get('password')),
-                    'gender'   => $request->gender
-                ]);
+            return $this->student_service->register_student($request->all());
         
-                Student::Create([
-                    'phone_number' => $request->phone_number,
-                    'father_phone' => $request->father_phone,
-                    'mother_phone' => $request->mother_phone,
-                    'school_name'  => $request->school_name,
-                    'father_job'   => $request->father_job,
-                    'card_photo'   => store_image($request->file('card_photo'), 'cards'),
-                    'mayor_id'     => $request->mayor_id,
-                    'academic_year_id'  => $request->academic_year_id,
-                    'user_id'      => $user->id
-                ]);
-
-                $user->assignRole('student');
-
-            DB::commit();
+        } catch (\Exception $e) {
 
             return response()->json([
-                'Message' => 'The account has been created successfully. You can contact support to activate the account'
-            ], 201);
+                'Message' => 'Sorry, an error occurred. Please try again.'
+            ], 500); 
 
-        } catch (Exception $e) {
-
-            DB::rollBack();
-            return response()->json([
-                'message' => 'Sorry, an error occurred, please try again'
-            ], 500);
-            
         }
 
     }
@@ -65,101 +43,77 @@ class JWTAuthController extends Controller
     public function login(Request $request)
     {
 
-        $credentials = $request->only('email', 'password');
-
         try {
 
-            if (! $token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'Invalid credentials'], 401);
-            }
+            return $this->auth_service->login($request->all());
 
-            // Get the authenticated user.
-            $user = auth()->user();
+        } catch (Exception $e) {
 
-            if(!$user->is_active) {
-                return response()->json(['Message' => 'This account is not activated. You can contact support'], 403);
-            }
-
-            // (optional) Attach the role to the token.
-            $token = JWTAuth::claims(['role' => $user->role])->fromUser($user);
-
-            return response()->json([
-                'Role'        => $user->type,
-                'permissions' => $user->getAllPermissions()->pluck('name'),
-                'Token' => $token
-            ]);
-
-        } catch (JWTException $e) {
-
-            return response()->json(['error' => 'Could not create token'], 500);
+            return response()->json(['error' => 'Sorry, an error occurred. Please try again.'], 500);
 
         }
 
     }
 
     // Get authenticated user
-    public function getUser()
+    public function get_student()
     {
 
         try {
 
-            if (! $user = JWTAuth::parseToken()->authenticate()) {
-                return response()->json(['error' => 'User not found'], 404);
-            }
+            return $this->student_service->get_student();
 
-        } catch (JWTException $e) {
+        } catch (Exception $e) {
 
-            return response()->json(['error' => 'Invalid token'], 400);
+            return response()->json(['error' => 'Sorry, an error occurred. Please try again.'], 500);
 
         }
-
-        $user = new StudentResource($user->load('student.academic_year', 'student.mayor'));
-        return response()->json([
-            'data'    => $user,
-            'Message' => 'User data retrieved successfully.'
-        ]);
 
     }
 
     public function get_all_students_inactive() {
 
-        $users = User::where('is_active', 0)->where('type', 'student')->with('student.academic_year', 'student.mayor')->get();
-        $users = StudentResource::collection($users);
+        try {
 
-        if($users) {
+            return $this->student_service->get_all_students_inactive();
 
-            return response()->json([
-                'data' => $users,
-                'Massege' => 'All students have been successfully recruited'
-            ]);
+        } catch (Exception $e) {
 
-        } else {
-
-            return response()->json([
-                'Message' => 'There are no inactive students'
-            ], 404);
+            return response()->json(['error' => 'Sorry, an error occurred. Please try again.'], 500);
 
         }
+
 
     }
 
     public function student_activation($id) {
 
-        User::findOrFail($id)->update([
-            'is_active' => 1
-        ]);
-        
-        return response()->json([
-            'Message' => 'This student has been activated successfully'
-        ], 200);
+        try {
+
+            return $this->student_service->student_activation($id);
+
+        } catch (Exception $e) {
+
+            return response()->json(['error' => 'Sorry, an error occurred. Please try again.'], 500);
+
+        }
 
     }
 
     // User logout
     public function logout()
     {
-        JWTAuth::invalidate(JWTAuth::getToken());
 
-        return response()->json(['message' => 'Successfully logged out']);
+        try {
+
+            return $this->auth_service->logout();
+
+        } catch (Exception $e) {
+
+            return response()->json(['error' => 'Sorry, an error occurred. Please try again.'], 500);
+
+        }
+
     }
+
 }

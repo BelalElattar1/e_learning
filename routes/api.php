@@ -19,7 +19,7 @@ Route::group(['middleware' => 'JwtAuth'], function () {
 
     //  User Auth
     Route::prefix('user')->controller(JWTAuthController::class)->group(function () {
-        Route::get('/show', 'getUser');
+        Route::get('/show', 'get_student');
         Route::get('/get_all_students_inactive', 'get_all_students_inactive')->middleware(['permission:get_all_students_inactive']);
         Route::put('/student_activation/{id}', 'student_activation')->middleware(['permission:student_activation']);
         Route::post('/logout', 'logout');
