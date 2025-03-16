@@ -16,8 +16,10 @@ class TeacherPermissionSeeder extends Seeder
         
         $permissions = [
 
-            // Manage Admins
-            'show_all_admins',
+            // Manage Subscribes
+            'show_all_subscribes',
+            'create_subscribe',
+            'delete_subscribe',
             
         ];
 

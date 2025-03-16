@@ -7,6 +7,7 @@ use App\Http\Controllers\{
     AdminController,
     TeacherController,
     ImageController,
+    SubscribeController,
 };
 
 use App\Models\{
@@ -43,6 +44,14 @@ Route::group(['middleware' => 'JwtAuth'], function () {
     // Image Controller
     Route::prefix('images')->controller(ImageController::class)->group(function () {
         Route::post('/get_private_image/{folder}/{filename}', 'get_private_image');
+    });
+
+    // Subscribes Controller
+    Route::prefix('subscribes')->controller(SubscribeController::class)->group(function () {
+        Route::get('/index', 'index')->middleware(['permission:show_all_subscribes']);
+        Route::post('/store', 'store')->middleware(['permission:create_subscribe']);
+        Route::put('/update_subscription_status/{subscribe}', 'update_subscription_status')->middleware(['permission:update_subscription_status']);
+        Route::delete('/destroy/{subscribe}', 'destroy')->middleware(['permission:delete_subscribe']);
     });
 
 });

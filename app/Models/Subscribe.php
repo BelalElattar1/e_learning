@@ -16,6 +16,6 @@ class Subscribe extends Model
     ];
 
     public function teacher() {
-        $this->belongsTo(Teacher::class);
+        return $this->belongsTo(Teacher::class);
     }
 }

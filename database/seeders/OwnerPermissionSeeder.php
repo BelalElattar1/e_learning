@@ -33,10 +33,11 @@ class OwnerPermissionSeeder extends Seeder
             'get_all_students_inactive',
             'student_activation',
 
-            // Manage Materials
-            'create_material',
-            'update_material',
-            'delete_material',
+            // Manage Subscribes
+            'show_all_subscribes',
+            'create_subscribe',
+            'update_subscription_status',
+            'delete_subscribe',
             
         ];
 
