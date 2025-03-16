@@ -121,7 +121,6 @@ class JWTAuthController extends Controller
             return response()->json([
                 'error' => $e->getMessage()
             ], 500);
-
         }
 
     }
@@ -137,8 +136,8 @@ class JWTAuthController extends Controller
 
         } catch (Exception $e) {
 
-            return response()->json(
-                ['error' => $e->getMessage()
+            return response()->json([
+                'error' => $e->getMessage()
             ], 500);
 
         }

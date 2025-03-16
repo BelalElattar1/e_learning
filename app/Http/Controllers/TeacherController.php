@@ -3,14 +3,8 @@
 namespace App\Http\Controllers;
 
 use Exception;
-use Carbon\Carbon;
 use App\Models\User;
 use App\ResponseTrait;
-use App\Models\Teacher;
-use App\Models\Subscribe;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use App\Http\Resources\TeacherResource;
 use App\services\teachers\TeacherService;
 use App\Http\Requests\teachers\StoreTeacherRequest;
 use App\Http\Requests\teachers\UpdateTeacherRequest;

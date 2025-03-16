@@ -3,18 +3,21 @@
 namespace App\Http\Controllers;
 
 use Exception;
-use Carbon\Carbon;
-use App\Models\User;
 use App\ResponseTrait;
 use Illuminate\Http\Request;
-use App\Models\PasswordResetCode;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use App\services\password\PasswordResetService;
 
 class PasswordReset extends Controller
 {
     use ResponseTrait;
+
+    public $password_rest_service;
+
+    public function __construct(PasswordResetService $password_reset_service)
+    {
+        $this->password_rest_service = $password_reset_service;
+    }
 
     public function send_reset_code(Request $request) {
 
@@ -28,25 +31,14 @@ class PasswordReset extends Controller
 
         try {
 
-            PasswordResetCode::whereEmail($request->email)->delete();
-
-            $code = rand(100000, 999999);
-            PasswordResetCode::create([
-                'email'      => $request->email,
-                'code'       => $code,
-                'expires_at' => Carbon::now()->addMinutes(10)
-            ]);
-
-            Mail::raw("Your Password Reset Code Is: $code", function ($message) use ($request) {
-                $message->to($request->email)
-                        ->subject('Code Sent Your Email');
-            });
-
+            $this->password_rest_service->send_reset_code($request->all());
             return $this->response('The code has been sent to your email successfully');
         
         } catch (Exception $e) {
 
-            return $this->response('An error occurred sending the code, try again', 500);
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
 
         }
 
@@ -66,20 +58,7 @@ class PasswordReset extends Controller
 
         try {
 
-            $reset = PasswordResetCode::where('email', $request->email)
-                ->where('code', $request->code)
-                ->where('expires_at', '>=', Carbon::now())
-                ->first();
-            
-            if(!$reset) {
-                return $this->response('Invalid Or Expired Reset Code', 400);
-            }
-
-            User::whereEmail($reset->email)->update([
-                'password' => Hash::make($request->password),
-            ]);
-
-            $reset->delete();
+            $this->password_rest_service->reset_password($request->all());
             return $this->response('Password Has Been Reset Suc');
 
         } catch (Exception $e) {
