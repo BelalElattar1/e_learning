@@ -9,6 +9,8 @@ use App\Http\Controllers\{
     ImageController,
     SubscribeController,
     CourseController,
+    CodeController,
+    ChargeController,
 };
 
 use App\Models\{
@@ -57,8 +59,18 @@ Route::group(['middleware' => 'JwtAuth'], function () {
 
     // Courses Controller
     Route::prefix('courses')->controller(CourseController::class)->group(function () {
-        Route::post('/store', 'store');
-        Route::post('/update/{course}', 'update');
+        Route::post('/store', 'store')->middleware(['permission:creat_course']);
+        Route::post('/update/{course}', 'update')->middleware(['permission:update_course']);
+    });
+
+    // Code Controller
+    Route::prefix('codes')->controller(CodeController::class)->group(function () {
+        Route::post('/store', 'store')->middleware(['permission:create_code']);
+    });
+
+    // Chaarges Controller
+    Route::prefix('charges')->controller(ChargeController::class)->group(function () {
+        Route::post('/charge', 'charge')->middleware(['permission:charge']);
     });
 
 });
@@ -75,7 +87,10 @@ Route::post('reset_password', [PasswordReset::class, 'reset_password']);
 Route::get('teachers/index', [TeacherController::class, 'index']);
 
 // Course Controller
-Route::get('courses/index', [CourseController::class, 'index']);
+Route::prefix('courses')->controller(CourseController::class)->group(function () {
+    Route::post('/index', 'index');
+    Route::get('/show/{course}', 'show');
+});
 
 // AcademicYear Controller
 Route::get('academic_years/index', function () {

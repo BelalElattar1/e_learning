@@ -69,9 +69,9 @@ PHP;
 
 namespace App\Http\Requests\\$folderName;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\BaseRequest;
 
-class {$className}Request extends FormRequest
+class {$className}Request extends BaseRequest
 {
     public function authorize()
     {
@@ -104,7 +104,7 @@ use Exception;
 use App\Services\\$folderName\\{$className}Service;
 use App\Http\Requests\\$folderName\\{$className}Request;
 
-class {$className}Controller extends {$className}Request
+class {$className}Controller extends Controller
 {
     protected \${$serviceVar};
 

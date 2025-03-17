@@ -20,6 +20,16 @@ class TeacherPermissionSeeder extends Seeder
             'show_all_subscribes',
             'create_subscribe',
             'delete_subscribe',
+
+            // Manage Courses
+            'creat_course',
+            'update_course',
+
+            // Manage Codes
+            'create_code',
+
+            // Manage Charges
+            'show_all_charges',
             
         ];
 

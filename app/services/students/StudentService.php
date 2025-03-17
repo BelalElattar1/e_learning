@@ -2,13 +2,13 @@
 
 namespace App\services\students;
 
+use Exception;
 use App\Models\User;
 use App\Models\Student;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\StudentResource;
-use Exception;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 class StudentService {

@@ -38,6 +38,9 @@ class OwnerPermissionSeeder extends Seeder
             'create_subscribe',
             'update_subscription_status',
             'delete_subscribe',
+
+            // Manage Charges
+            'show_all_charges',
             
         ];
 

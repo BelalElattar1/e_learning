@@ -16,8 +16,9 @@ class StudentPermissionSeeder extends Seeder
         
         $permissions = [
 
-            // Manage Admins
-            'show_all_admins',
+            // Manage Charges
+            'charge',
+            'show_all_charges',
             
         ];
 

@@ -38,6 +38,17 @@ class PermissionSeeder extends Seeder
             'create_subscribe',
             'update_subscription_status',
             'delete_subscribe',
+
+            // Manage Courses
+            'creat_course',
+            'update_course',
+
+            // Manage Codes
+            'create_code',
+
+            // Manage Charges
+            'charge',
+            'show_all_charges',
             
         ];
 
