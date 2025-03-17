@@ -18,6 +18,40 @@ class ChargeController extends Controller
         $this->charge_service = $charge_service;
     }
 
+    public function show_all_charges() {
+
+        try {
+
+            $data = $this->charge_service->show_all_charges();
+            return $this->response('The code has been shipped successfully', 200, $data);
+
+        } catch(Exception $e) {
+
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+
+        }
+
+    }
+
+    public function show_all_wallets() {
+
+        try {
+
+            $data = $this->charge_service->show_all_wallets();
+            return $this->response('The code has been shipped successfully', 200, $data);
+
+        } catch(Exception $e) {
+
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+
+        }
+
+    }
+
     public function charge(ChargeRequest $request) {
 
         try {

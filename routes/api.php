@@ -71,6 +71,8 @@ Route::group(['middleware' => 'JwtAuth'], function () {
     // Chaarges Controller
     Route::prefix('charges')->controller(ChargeController::class)->group(function () {
         Route::post('/charge', 'charge')->middleware(['permission:charge']);
+        Route::get('/show_all_charges', 'show_all_charges')->middleware(['permission:show_all_charges']);
+        Route::get('/show_all_wallets', 'show_all_wallets')->middleware(['permission:show_all_wallets']);
     });
 
 });

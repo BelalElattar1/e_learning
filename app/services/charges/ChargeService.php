@@ -7,6 +7,8 @@ use App\Models\Code;
 use App\Models\Charge;
 use App\Models\Wallet;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\ChargeResource;
+use App\Http\Resources\WalletResource;
 
 class ChargeService
 {
@@ -73,6 +75,64 @@ class ChargeService
                 'teacher_id' => $code->teacher->id,
                 'student_id' => $user->student->id
             ]);
+
+        }
+
+    }
+
+    public function show_all_charges() {
+
+        $user = auth()->user();
+        if($user->type == "student") {
+
+            $charges = Charge::with('teacher')->where('student_id', $user->student->id)->get();
+
+        } elseif($user->type == "teacher") {
+
+            $charges = Charge::with('student')->where('teacher_id', $user->teacher->id)->get();
+
+        } else {
+
+            $charges = Charge::with('teacher', 'student')->get();
+
+        }
+
+        if(count($charges) > 0) {
+
+            return ChargeResource::collection($charges);
+
+        } else {
+
+            throw new Exception('Not Found');
+
+        }
+
+    }
+
+    public function show_all_wallets() {
+
+        $user = auth()->user();
+        if($user->type == "student") {
+
+            $wallets = Wallet::with('teacher')->where('student_id', $user->student->id)->get();
+
+        } elseif($user->type == "teacher") {
+
+            $wallets = Wallet::with('student')->where('teacher_id', $user->teacher->id)->get();
+
+        } else {
+
+            $wallets = Wallet::with('teacher', 'student')->get();
+
+        }
+
+        if(count($wallets) > 0) {
+
+            return WalletResource::collection($wallets);
+
+        } else {
+
+            throw new Exception('Not Found');
 
         }
 

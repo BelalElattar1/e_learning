@@ -26,4 +26,8 @@ class Student extends Model
     public function academic_year() {
         return $this->belongsTo(AcademicYear::class);
     }
+
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
 }

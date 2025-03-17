@@ -49,6 +49,7 @@ class PermissionSeeder extends Seeder
             // Manage Charges
             'charge',
             'show_all_charges',
+            'show_all_wallets',
             
         ];
 

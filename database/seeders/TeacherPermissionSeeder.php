@@ -30,6 +30,7 @@ class TeacherPermissionSeeder extends Seeder
 
             // Manage Charges
             'show_all_charges',
+            'show_all_wallets',
             
         ];
 
