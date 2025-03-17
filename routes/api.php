@@ -8,6 +8,7 @@ use App\Http\Controllers\{
     TeacherController,
     ImageController,
     SubscribeController,
+    CourseController,
 };
 
 use App\Models\{
@@ -54,6 +55,12 @@ Route::group(['middleware' => 'JwtAuth'], function () {
         Route::delete('/destroy/{subscribe}', 'destroy')->middleware(['permission:delete_subscribe']);
     });
 
+    // Courses Controller
+    Route::prefix('courses')->controller(CourseController::class)->group(function () {
+        Route::post('/store', 'store');
+        Route::post('/update/{course}', 'update');
+    });
+
 });
 
 // Auth
@@ -66,6 +73,9 @@ Route::post('reset_password', [PasswordReset::class, 'reset_password']);
 
 // Teacher Controller
 Route::get('teachers/index', [TeacherController::class, 'index']);
+
+// Course Controller
+Route::get('courses/index', [CourseController::class, 'index']);
 
 // AcademicYear Controller
 Route::get('academic_years/index', function () {

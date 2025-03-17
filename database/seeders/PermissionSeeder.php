@@ -32,10 +32,12 @@ class PermissionSeeder extends Seeder
             'student_activation',
             'get_private_image',
 
-            // Manage Materials
-            'create_material',
-            'update_material',
-            'delete_material',
+
+            // Manage Subscribes
+            'show_all_subscribes',
+            'create_subscribe',
+            'update_subscription_status',
+            'delete_subscribe',
             
         ];
 

@@ -13,7 +13,7 @@ class AdminController extends Controller
 {    
     use ResponseTrait;
 
-    public $admin_service;
+    protected $admin_service;
 
     public function __construct(AdminService $admin_service)
     {

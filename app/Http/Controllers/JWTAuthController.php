@@ -10,8 +10,8 @@ use App\Http\Requests\students\StoreStudentRequest;
 
 class JWTAuthController extends Controller
 {
-    public $student_service; 
-    public $auth_service; 
+    protected $student_service; 
+    protected $auth_service; 
 
     public function __construct(StudentService $student_service, AuthService $auth_service) 
     {

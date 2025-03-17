@@ -12,7 +12,7 @@ class PasswordReset extends Controller
 {
     use ResponseTrait;
 
-    public $password_rest_service;
+    protected $password_rest_service;
 
     public function __construct(PasswordResetService $password_reset_service)
     {

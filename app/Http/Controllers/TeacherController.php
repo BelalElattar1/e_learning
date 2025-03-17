@@ -13,7 +13,7 @@ class TeacherController extends Controller
 {
     use ResponseTrait;
 
-    public $teacher_srvice;
+    protected $teacher_srvice;
 
     public function __construct(TeacherService $teacher_service)
     {

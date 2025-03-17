@@ -13,7 +13,7 @@ class SubscribeController extends Controller
 {
     use ResponseTrait;
 
-    public $subscribe_service;
+    protected $subscribe_service;
 
     public function __construct(SubscribeService $subscribe_service)
     {
