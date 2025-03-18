@@ -23,8 +23,8 @@ class UpdateTeacherRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'name'         => ['required', 'string', 'max:255'],
-            'email'        => ['required', 'string', 'email', Rule::unique('users')->ignore($this->route('user'))],
+            'name'         => ['required', 'string', 'max:30'],
+            'email'        => ['required', 'string', 'email', 'max:50', Rule::unique('users')->ignore($this->route('user'))],
             'phone_number' => ['required', 'regex:/^(010|011|012|015)[0-9]{8}$/', Rule::unique('teachers')->ignore($this->route('user')->teacher->id)],
             'password'     => ['required', 'string', 'min:6', 'confirmed'],
             'gender'       => ['required', 'in:male,female'],

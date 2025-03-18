@@ -53,7 +53,29 @@ class PermissionSeeder extends Seeder
 
             // Manage buyings
             'buying',
-            'my_courses'
+            'my_courses',
+
+            // Manage Categories
+            'create_category',
+            'update_category',
+            'delete_category',
+
+            // Manage Sections
+            'create_section',
+            'update_section',
+            'delete_section',
+
+            // Manage Questions
+            'create_question',
+            'update_question',
+            'delete_question',
+
+            // Manage Answers
+            'answer',
+
+            // Manage Degrees
+            'show_all_degrees',
+            'show_details_degree'
             
         ];
 

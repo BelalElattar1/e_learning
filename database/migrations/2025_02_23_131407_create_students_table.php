@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('phone_number', 11)->unique();
             $table->string('father_phone', 11);
             $table->string('mother_phone', 11);
-            $table->string('school_name');
-            $table->string('father_job');
+            $table->string('school_name', 30);
+            $table->string('father_job', 30); 
             $table->string('card_photo')->unique();
             $table->foreignId('user_id')->constrained('users', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('mayor_id')->constrained('mayors', 'id')->cascadeOnDelete()->cascadeOnUpdate();

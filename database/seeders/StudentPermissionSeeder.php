@@ -23,7 +23,14 @@ class StudentPermissionSeeder extends Seeder
 
             // Manage buyings
             'buying',
-            'my_courses'
+            'my_courses',
+
+            // Manage Answers
+            'answer',
+
+            // Manage Degrees
+            'show_all_degrees',
+            'show_details_degree'
             
         ];
 

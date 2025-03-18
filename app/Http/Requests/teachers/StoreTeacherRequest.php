@@ -22,8 +22,8 @@ class StoreTeacherRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'name'         => ['required', 'string', 'max:255'],
-            'email'        => ['required', 'string', 'email', 'unique:users'],
+            'name'         => ['required', 'string', 'max:30'],
+            'email'        => ['required', 'string', 'email', 'max:50', 'unique:users'],
             'phone_number' => ['required', 'regex:/^(010|011|012|015)[0-9]{8}$/', 'unique:teachers'],
             'password'     => ['required', 'string', 'min:6', 'confirmed'],
             'gender'       => ['required', 'in:male,female'],

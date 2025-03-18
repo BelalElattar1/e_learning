@@ -14,7 +14,7 @@ class ChargeRequest extends BaseRequest
     public function rules()
     {
         return [
-            'code' => ['required', 'string', 'min:13', 'exists:codes,code'],
+            'code' => ['required', 'string', 'min:13', 'max:13', 'exists:codes,code'],
         ];
     }
 }

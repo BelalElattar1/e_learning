@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('codes', function (Blueprint $table) {
             $table->id();
             $table->integer('price');
-            $table->string('code')->unique();
+            $table->string('code', 13)->unique();
             $table->boolean('is_active')->default(1);
             $table->foreignId('teacher_id')->constrained('teachers', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();

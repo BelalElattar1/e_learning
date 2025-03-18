@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->date('start')->nullable();
             $table->date('end')->nullable();
-            $table->string('pay_photo');
+            $table->string('pay_photo')->unique();
             $table->enum('status', ['pending', 'active', 'rejected', 'expired'])->default('pending');
             $table->string('reason_for_rejection')->nullable();
             $table->foreignId('teacher_id')->constrained('teachers', 'id')->cascadeOnDelete()->cascadeOnUpdate();

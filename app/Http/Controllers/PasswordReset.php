@@ -22,7 +22,7 @@ class PasswordReset extends Controller
     public function send_reset_code(Request $request) {
 
         $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email|max:255|exists:users,email',
+            'email' => 'required|string|email|max:50|exists:users,email',
         ]);
 
         if($validator->fails()){
@@ -47,8 +47,8 @@ class PasswordReset extends Controller
     public function reset_password(Request $request) {
 
         $validator = Validator::make($request->all(), [
-            'email'     => 'required|string|email|max:255|exists:password_reset_codes,email',
-            'code'      => 'required|string|exists:password_reset_codes,code',
+            'email'     => 'required|string|email|max:50|exists:password_reset_codes,email',
+            'code'      => 'required|string|max:6|min:6|exists:password_reset_codes,code',
             'password'  => 'required|string|min:6|confirmed',
         ]);
 

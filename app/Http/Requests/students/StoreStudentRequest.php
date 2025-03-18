@@ -22,14 +22,14 @@ class StoreStudentRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'name'             => 'required|string|max:255',
-            'email'            => 'required|string|email|max:255|unique:users',
+            'name'             => 'required|string|max:30',
+            'email'            => 'required|string|email|max:50|unique:users',
             'password'         => 'required|string|min:6||confirmed',
             'phone_number'     => ['required', 'regex:/^(010|011|012|015)[0-9]{8}$/', 'unique:students'],
             'father_phone'     => ['required', 'regex:/^(010|011|012|015)[0-9]{8}$/', 'unique:students'],
             'mother_phone'     => ['required', 'regex:/^(010|011|012|015)[0-9]{8}$/', 'unique:students'],
-            'school_name'      => ['required', 'string', 'min:3', 'max:100'],
-            'father_job'       => ['required', 'string', 'min:3', 'max:50'],
+            'school_name'      => ['required', 'string', 'min:3', 'max:30'],
+            'father_job'       => ['required', 'string', 'min:3', 'max:30'],
             'card_photo'       => ['required', 'file', 'max:1048576', 'mimes:jpg,jpeg,png', 'unique:students'],
             'gender'           => ['required', 'in:male,female'],
             'mayor_id'         => ['required', 'integer', 'exists:mayors,id'],

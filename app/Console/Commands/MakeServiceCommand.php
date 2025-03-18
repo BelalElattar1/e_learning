@@ -101,16 +101,36 @@ PHP;
 namespace App\Http\Controllers;
 
 use Exception;
+use App\ResponseTrait;
 use App\Services\\$folderName\\{$className}Service;
 use App\Http\Requests\\$folderName\\{$className}Request;
 
 class {$className}Controller extends Controller
 {
+    use ResponseTrait;
+    
     protected \${$serviceVar};
 
     public function __construct({$className}Service \${$serviceVar})
     {
         \$this->{$serviceVar} = \${$serviceVar};
+    }
+
+    public function store() {
+
+        try {
+
+            \$this->$serviceVar->\store();
+            return \$this->response('');
+
+        } catch(Exception \$e) {
+
+            return response()->json([
+                'error' => \$e->getMessage()
+            ], 500);
+
+        }
+
     }
 
 }

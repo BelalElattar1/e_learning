@@ -22,8 +22,8 @@ class StoreAdminRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'name'      => ['required', 'string', 'max:255'],
-            'email'     => ['required', 'string', 'email', 'unique:users'],
+            'name'      => ['required', 'string', 'max:35'],
+            'email'     => ['required', 'string', 'email', 'max:50' ,'unique:users'],
             'password'  => ['required', 'string', 'min:6', 'confirmed'],
             'gender'    => ['required', 'in:male,female'],
             'is_active' => ['required', 'in:1,0']

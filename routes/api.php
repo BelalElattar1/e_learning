@@ -12,6 +12,7 @@ use App\Http\Controllers\{
     CodeController,
     ChargeController,
     BuyingController,
+    CategoryController,
 };
 
 use App\Models\{
@@ -80,6 +81,13 @@ Route::group(['middleware' => 'JwtAuth'], function () {
     Route::prefix('buyings')->controller(BuyingController::class)->group(function () {
         Route::post('/buying/{course}', 'buying')->middleware(['permission:buying']);
         Route::get('/my_courses', 'my_courses')->middleware(['permission:my_courses']);
+    });
+
+    // Categories Controller
+    Route::prefix('categories')->controller(CategoryController::class)->group(function () {
+        Route::post('/store', 'store')->middleware(['permission:create_category']);
+        Route::put('/update/{category}', 'update')->middleware(['permission:update_category']);
+        Route::delete('/destroy/{category}', 'destroy')->middleware(['permission:delete_category']);
     });
 
 });

@@ -42,6 +42,10 @@ class OwnerPermissionSeeder extends Seeder
             // Manage Charges
             'show_all_charges',
             'show_all_wallets',
+
+            // Manage Degrees
+            'show_all_degrees',
+            'show_details_degree'
             
         ];
 

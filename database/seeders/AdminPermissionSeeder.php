@@ -35,6 +35,14 @@ class AdminPermissionSeeder extends Seeder
             'create_subscribe',
             'update_subscription_status',
             'delete_subscribe',
+
+            // Manage Charges
+            'show_all_charges',
+            'show_all_wallets',
+
+            // Manage Degrees
+            'show_all_degrees',
+            'show_details_degree'
             
         ];
 

@@ -26,4 +26,8 @@ class Course extends Model
     public function buyings() {
         return $this->hasMany(Buying::class);
     }
+
+    public function categories() {
+        return $this->hasMany(Category::class);
+    }
 }
