@@ -12,4 +12,12 @@ class Category extends Model
         'course_id',
         'teacher_id'
     ];
+
+    public function course() {
+        return $this->belongsTo(Course::class);
+    }
+
+    public function sections() {
+        return $this->hasMany(Section::class);
+    }
 }

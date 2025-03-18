@@ -120,7 +120,7 @@ class {$className}Controller extends Controller
 
         try {
 
-            \$this->$serviceVar->\store();
+            \$this->$serviceVar\\->store();
             return \$this->response('');
 
         } catch(Exception \$e) {

@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Http\Requests\sections;
+
+use App\Http\Requests\BaseRequest;
+
+class StoreSectionRequest extends BaseRequest
+{
+    public function authorize()
+    {
+        return true;
+    }
+
+    public function rules()
+    {
+        return [
+            'name'        => ['required', 'string', 'max:255'],
+            'type'        => ['required', 'in:video,pdf,exam'],
+            'exam_mark'   => ['required_if:type,exam', 'nullable', 'integer'],
+            'time'        => ['required_if:type,exam', 'nullable', 'integer'],
+            'link'        => ['required_if:type,pdf,video', 'nullable', 'url'],
+            'category_id' => ['required', 'integer', 'exists:categories,id']
+        ];
+    }
+}
