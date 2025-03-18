@@ -20,6 +20,10 @@ class StudentPermissionSeeder extends Seeder
             'charge',
             'show_all_charges',
             'show_all_wallets',
+
+            // Manage buyings
+            'buying',
+            'my_courses'
             
         ];
 

@@ -11,6 +11,7 @@ use App\Http\Controllers\{
     CourseController,
     CodeController,
     ChargeController,
+    BuyingController,
 };
 
 use App\Models\{
@@ -67,12 +68,18 @@ Route::group(['middleware' => 'JwtAuth'], function () {
     Route::prefix('codes')->controller(CodeController::class)->group(function () {
         Route::post('/store', 'store')->middleware(['permission:create_code']);
     });
-
+    
     // Chaarges Controller
     Route::prefix('charges')->controller(ChargeController::class)->group(function () {
         Route::post('/charge', 'charge')->middleware(['permission:charge']);
         Route::get('/show_all_charges', 'show_all_charges')->middleware(['permission:show_all_charges']);
         Route::get('/show_all_wallets', 'show_all_wallets')->middleware(['permission:show_all_wallets']);
+    });
+
+    // Buyings Controller
+    Route::prefix('buyings')->controller(BuyingController::class)->group(function () {
+        Route::post('/buying/{course}', 'buying')->middleware(['permission:buying']);
+        Route::get('/my_courses', 'my_courses')->middleware(['permission:my_courses']);
     });
 
 });
