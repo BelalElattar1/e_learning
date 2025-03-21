@@ -93,6 +93,7 @@ Route::group(['middleware' => 'JwtAuth'], function () {
 
     // Section Controller
     Route::prefix('sections')->controller(SectionController::class)->group(function () {
+        Route::get('/show/{section}', 'show');
         Route::post('/store', 'store')->middleware(['permission:create_section']);
         Route::put('/update/{section}', 'update')->middleware(['permission:update_section']);
         Route::delete('/destroy/{section}', 'destroy')->middleware(['permission:delete_section']);
@@ -113,7 +114,7 @@ Route::get('teachers/index', [TeacherController::class, 'index']);
 
 // Course Controller
 Route::prefix('courses')->controller(CourseController::class)->group(function () {
-    Route::post('/index', 'index');
+    Route::get('/index', 'index');
     Route::get('/show/{course}', 'show');
 });
 

@@ -39,20 +39,54 @@ class SubscribeService {
     public function update_subscription_status($request, Subscribe $subscribe) {
 
         $subscribe = Subscribe::where('id', $subscribe->id)->where('status', 'pending')->first();
-        if($subscribe) {
 
-            $subscribe->update([
-                'start'                => $request['status'] == 'active' ? Carbon::now()->format("Y-m-d") : NULL,
-                'end'                  => $request['status'] == 'active' ?  Carbon::now()->addMonth()->format("Y-m-d") : NULL,
-                'status'               => $request['status'],
-                'reason_for_rejection' => $request['status'] == 'rejected' ?  $request['reason_for_rejection'] : NULL
-            ]);
-
-        } else {
-
+        if (!$subscribe) {
             throw new Exception('This subscription has been modified in the past.');
+        }
+
+        $is_subscribed = Subscribe::where('teacher_id', $subscribe->teacher_id)
+                        ->where('status', 'active')
+                        ->latest('id') 
+                        ->first();
+
+        $dates = $this->calculate_subscribtion_date($request['status'], $is_subscribed);
+
+        $subscribe->update([
+            'start'                => $dates['start'],
+            'end'                  => $dates['end'],
+            'status'               => $request['status'],
+            
+            'reason_for_rejection' => $request['status'] == 'rejected' 
+                                    ? $request['reason_for_rejection'] 
+                                    : null,
+        ]);
+
+    }
+
+    private function calculate_subscribtion_date($status, $is_subscribed) {
+
+        if ($status !== 'active') {
+
+            return [
+                'start' => null, 
+                'end' => null
+            ];
 
         }
+
+        if (!$is_subscribed) {
+
+            return [
+                'start' => Carbon::now()->format("Y-m-d"),
+                'end'   => Carbon::now()->addMonth()->format("Y-m-d")
+            ];
+
+        }
+    
+        return [
+            'start' => Carbon::parse($is_subscribed->end)->addDay()->format("Y-m-d"), 
+            'end'   => Carbon::parse($is_subscribed->end)->addMonth()->addDay()->format("Y-m-d")
+        ];
 
     }
 

@@ -20,6 +20,23 @@ class SectionController extends Controller
         $this->section_service = $section_service;
     }
 
+    public function show(Section $section) {
+
+        try {
+
+            $data = $this->section_service->show($section);
+            return $this->response('Show Section successfully', 200, $data);
+
+        } catch(Exception $e) {
+
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+
+        }
+
+    }
+
     public function store(StoreSectionRequest $request) {
 
         try {

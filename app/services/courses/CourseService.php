@@ -17,40 +17,29 @@ class CourseService {
 
             JWTAuth::parseToken()->authenticate();
             $user = auth()->user();
+    
+            $courses = match ($user->type) {
 
-            if($user->type == 'student') {
+                'student' => Course::whereHas('teacher', fn($q) => $q->where('is_subscriber', true))
+                    ->whereDoesntHave('buyings', fn($q) => $q->where('student_id', $user->student->id))
+                    ->where('academic_year_id', $user->student->academic_year_id)
+                    ->with('academic_year', 'teacher')->get(),
+    
+                'teacher' => Course::where('teacher_id', $user->teacher->id)
+                    ->with('academic_year')->get(),
+    
+                default => Course::with('academic_year', 'teacher')->get(),
+                
+            };
+    
+        } catch (JWTException $e) {
 
-                $courses = Course::whereHas('teacher', function ($query) {
-                    $query->where('is_subscriber', true);
-                })->with('academic_year', 'teacher')->where('academic_year_id', $user->student->academic_year_id)->get();
-
-            } elseif($user->type == 'teacher') {
-
-                $courses = Course::where('teacher_id', $user->teacher->id)->with('academic_year')->get();
-
-            } else {
-
-                $courses = Course::with('academic_year', 'teacher')->get();
-
-            }
-
-        } catch(JWTException $e) {
-
-            $courses = Course::whereHas('teacher', function ($query) {
-                $query->where('is_subscriber', true);
-            })->with('academic_year', 'teacher')->get();
-
-        } 
-
-        if(count($courses) > 0) {
-
-            return CourseResource::collection($courses);
-
-        } else {
-
-            throw new Exception('There are no courses');
+            $courses = Course::whereHas('teacher', fn($q) => $q->where('is_subscriber', true))
+                ->with('academic_year', 'teacher')->get();
 
         }
+        
+        return count($courses) > 0 ? CourseResource::collection($courses) : throw new Exception('There are no courses');
 
     }
 
