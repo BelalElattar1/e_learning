@@ -13,6 +13,7 @@ use App\Http\Controllers\{
     ChargeController,
     BuyingController,
     CategoryController,
+    QuestionController,
     SectionController,
 };
 
@@ -97,6 +98,12 @@ Route::group(['middleware' => 'JwtAuth'], function () {
         Route::post('/store', 'store')->middleware(['permission:create_section']);
         Route::put('/update/{section}', 'update')->middleware(['permission:update_section']);
         Route::delete('/destroy/{section}', 'destroy')->middleware(['permission:delete_section']);
+    });
+
+    // Questions Controller
+    Route::prefix('questions')->controller(QuestionController::class)->group(function () {
+        Route::post('/store', 'store')->middleware(['permission:create_question']);
+        Route::delete('/destroy/{question}', 'destroy')->middleware(['permission:delete_question']);
     });
 
 });

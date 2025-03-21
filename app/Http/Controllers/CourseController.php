@@ -19,6 +19,23 @@ class CourseController extends Controller
         $this->course_service = $course_service;
     }
 
+    public function show(Course $course) {
+
+        try {
+
+            $data = $this->course_service->show($course);
+            return $this->response('Show Details Course Suc', 200, $data);
+
+        } catch(Exception $e) {
+
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+
+        }
+
+    }
+
     public function index() {
 
         try {

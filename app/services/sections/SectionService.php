@@ -28,9 +28,13 @@ class SectionService
 
         }
 
-        if($section->type == 'exam') {
-            $section = $section->load('questions.chooses');
+        $query = Section::where('id', $section->id);
+
+        if ($section->type == 'exam') {
+            $query->with('questions.chooses');
         }
+    
+        $section = $query->firstOrFail();
         
         return new SectionResource($section);
 

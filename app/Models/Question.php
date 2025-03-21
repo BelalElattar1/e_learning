@@ -12,7 +12,7 @@ class Question extends Model
         'teacher_id'
     ];
 
-    public function chooses() {
+    public function chooses() { 
         return $this->hasMany(Choose::class);
     }
 

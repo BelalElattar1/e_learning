@@ -21,6 +21,6 @@ class Section extends Model
     }
 
     public function questions() {
-        return $this->hasMany(Question::class);
+        return $this->hasMany(Question::class, 'exam_id', 'id');
     }
 }

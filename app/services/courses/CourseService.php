@@ -11,6 +11,13 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 
 class CourseService {
 
+    public function show(Course $course) {
+
+        $course = Course::with('categories.sections')->findOrFail($course->id);
+        return new CourseResource($course);
+
+    }
+
     public function index() {
 
         try {
