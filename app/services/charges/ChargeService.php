@@ -16,35 +16,28 @@ class ChargeService
 
         $user = auth()->user();
         $code = Code::where('code', $request['code'])->where('is_active', 1)->first();
+        throw_unless($code, new Exception('This code is not activated'));
 
-        if($code) {
+        DB::transaction(function () use ($code, $user) {  
 
-            DB::transaction(function () use ($code, $user) {  
+            $this->create_charge($code, $user);
+            $this->create_wallet($code, $user);
 
-                $this->create_charge($code, $user);
-                $this->create_wallet($code, $user);
+            // بحط اي فلوس بتتشحن للمدرس ده عشان يبقى عارف كل الفلوس اللي دخلت من اول ما دخل الموقع
+            $code->teacher->user->update([
+                'wallet' => $code->teacher->user->wallet + $code->price
+            ]);
 
-                // بحط اي فلوس بتتشحن للمدرس ده عشان يبقى عارف كل الفلوس اللي دخلت من اول ما دخل الموقع
-                $code->teacher->user->update([
-                    'wallet' => $code->teacher->user->wallet + $code->price
-                ]);
+            // بحط اي فلوس الطالب ده شحنها عشان يعرف التوتال بتاعه كام
+            $user->update([
+                'wallet' => $user->wallet + $code->price
+            ]);
 
-                // بحط اي فلوس الطالب ده شحنها عشان يعرف التوتال بتاعه كام
-                $user->update([
-                    'wallet' => $user->wallet + $code->price
-                ]);
+            $code->update([
+                'is_active' => 0
+            ]);
 
-                $code->update([
-                    'is_active' => 0
-                ]);
-
-            });
-
-        } else {
-
-            throw new Exception('This code is not activated');
-
-        }
+        });
 
     }
 

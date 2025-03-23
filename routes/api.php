@@ -117,11 +117,11 @@ Route::post('forget_password', [PasswordReset::class, 'send_reset_code']);
 Route::post('reset_password', [PasswordReset::class, 'reset_password']);
 
 // Teacher Controller
-Route::get('teachers/index', [TeacherController::class, 'index']);
+Route::get('teachers/index/{material}', [TeacherController::class, 'index']);
 
 // Course Controller
 Route::prefix('courses')->controller(CourseController::class)->group(function () {
-    Route::get('/index', 'index');
+    Route::get('/index/{teacher}', 'index');
     Route::get('/show/{course}', 'show');
 });
 

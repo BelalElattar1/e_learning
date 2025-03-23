@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Exception;
 use App\Models\Course;
 use App\ResponseTrait;
+use App\Models\Teacher;
 use App\services\courses\CourseService;
 use App\Http\Requests\courses\CourseRequest;
 
@@ -36,11 +37,11 @@ class CourseController extends Controller
 
     }
 
-    public function index() {
+    public function index(Teacher $teacher) {
 
         try {
 
-            $data = $this->course_service->index();
+            $data = $this->course_service->index($teacher);
             return $this->response('All courses have been brought', 200, $data);
 
         } catch(Exception $e) {

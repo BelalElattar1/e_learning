@@ -4,6 +4,7 @@ namespace App\services\courses;
 
 use Exception;
 use App\Models\Course;
+use App\Models\Teacher;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Resources\CourseResource;
 use Illuminate\Support\Facades\Storage;
@@ -13,12 +14,18 @@ class CourseService {
 
     public function show(Course $course) {
 
-        $course = Course::with('categories.sections')->findOrFail($course->id);
-        return new CourseResource($course);
+        $user  = auth()->user();
+        $course = Course::with(['categories.sections' => function ($q) use ($user) {
+            if (!$user || $user->type === 'student') {
+                $q->where('is_active', true);
+            }
+        }])->where('id', $course->id)->first();
+
+        return $course ? new CourseResource($course) : throw new Exception('There are no courses');
 
     }
 
-    public function index() {
+    public function index(Teacher $teacher) {
 
         try {
 
@@ -27,22 +34,24 @@ class CourseService {
     
             $courses = match ($user->type) {
 
-                'student' => Course::whereHas('teacher', fn($q) => $q->where('is_subscriber', true))
-                    ->whereDoesntHave('buyings', fn($q) => $q->where('student_id', $user->student->id))
-                    ->where('academic_year_id', $user->student->academic_year_id)
-                    ->with('academic_year', 'teacher')->get(),
+                'student' => Course::whereRelation('teacher', 'is_subscriber', true)
+                            ->whereDoesntHave('buyings', fn($q) => $q->where('student_id', $user->student->id))
+                            ->where('teacher_id', $teacher->id)
+                            ->where('academic_year_id', $user->student->academic_year_id)
+                            ->with('academic_year', 'teacher')->get(),
     
                 'teacher' => Course::where('teacher_id', $user->teacher->id)
-                    ->with('academic_year')->get(),
+                            ->with('academic_year', 'teacher')->get(),
     
-                default => Course::with('academic_year', 'teacher')->get(),
+                default => Course::where('teacher_id', $teacher->id)->with('academic_year', 'teacher')->get(),
                 
             };
     
         } catch (JWTException $e) {
 
-            $courses = Course::whereHas('teacher', fn($q) => $q->where('is_subscriber', true))
-                ->with('academic_year', 'teacher')->get();
+            $courses = Course::whereRelation('teacher', 'is_subscriber', true)
+                    ->where('teacher_id', $teacher->id)
+                    ->with('academic_year', 'teacher')->get();
 
         }
         

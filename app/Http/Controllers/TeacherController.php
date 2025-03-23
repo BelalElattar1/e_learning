@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Exception;
 use App\Models\User;
 use App\ResponseTrait;
+use App\Models\Material;
 use App\services\teachers\TeacherService;
 use App\Http\Requests\teachers\StoreTeacherRequest;
 use App\Http\Requests\teachers\UpdateTeacherRequest;
@@ -20,11 +21,11 @@ class TeacherController extends Controller
         $this->teacher_srvice = $teacher_service;
     }
 
-    public function index() {
+    public function index(Material $material) {
 
         try {
 
-            $data = $this->teacher_srvice->index();
+            $data = $this->teacher_srvice->index($material);
             return $this->response('Show All Teachers Suc', 201, $data);
 
         } catch(Exception $e) {

@@ -12,6 +12,7 @@ class Section extends Model
         'link',
         'time',
         'exam_mark',
+        'is_active',
         'category_id',
         'teacher_id'
     ];

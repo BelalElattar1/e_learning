@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('wallets', function (Blueprint $table) {
             $table->id();
-            $table->string('price');
+            $table->integer('price');
             $table->foreignId('student_id')->constrained('students', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('teacher_id')->constrained('teachers', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->unique(['student_id', 'teacher_id']);

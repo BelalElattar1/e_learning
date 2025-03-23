@@ -28,15 +28,15 @@ class SectionService
 
         }
 
-        $query = Section::where('id', $section->id);
+        $query = Section::where('id', $section->id)->where('is_active', true);
 
         if ($section->type == 'exam') {
             $query->with('questions.chooses');
         }
     
-        $section = $query->firstOrFail();
+        $section = $query->first();
         
-        return new SectionResource($section);
+        return $section ? new SectionResource($section) : throw new Exception('Not Found');
 
     }
 
@@ -52,6 +52,7 @@ class SectionService
                 'link'        => $request['link'],
                 'time'        => $request['time'],
                 'exam_mark'   => $request['exam_mark'],
+                'is_active'   => $request['is_active'],
                 'category_id' => $request['category_id'],
                 'teacher_id'  => $user->teacher->id
             ]);
@@ -75,7 +76,8 @@ class SectionService
                 'type'        => $request['type'],
                 'link'        => $request['link'],
                 'time'        => $request['time'],
-                'exam_mark'   => $request['exam_mark']
+                'exam_mark'   => $request['exam_mark'],
+                'is_active'   => $request['is_active']
             ]);
 
         } else {

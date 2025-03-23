@@ -6,6 +6,7 @@ use Exception;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Teacher;
+use App\Models\Material;
 use App\Models\Subscribe;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -13,19 +14,16 @@ use App\Http\Resources\TeacherResource;
 
 class TeacherService {
 
-    public function index() {
+    public function index(Material $material) {
 
-        $teachers = User::where('type', 'teacher')->with('teacher.material')->get();
-        if(count($teachers) > 0) {
+        $teachers = User::where('type', 'teacher')
+        ->whereRelation('teacher', 'material_id', $material->id)
+        ->with('teacher.material')
+        ->get();
 
-            $teachers = TeacherResource::collection($teachers);
-            return $teachers;
-
-        } else {
-
-            throw new Exception('Not Found Teachers');
-
-        }
+        return count($teachers) > 0 
+        ? TeacherResource::collection($teachers) 
+        : throw new Exception('Not Found Teachers');
 
     }
 

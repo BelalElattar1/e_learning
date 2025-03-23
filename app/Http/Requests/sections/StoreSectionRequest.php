@@ -14,6 +14,7 @@ class StoreSectionRequest extends BaseRequest
     public function rules()
     {
         return [
+            'is_active'   => ['required', 'in:1,0'],
             'name'        => ['required', 'string', 'max:255'],
             'type'        => ['required', 'in:video,pdf,exam'],
             'exam_mark'   => ['required_if:type,exam', 'nullable', 'integer'],
