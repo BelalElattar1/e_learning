@@ -56,6 +56,7 @@ Route::group(['middleware' => 'JwtAuth'], function () {
     // Subscribes Controller
     Route::prefix('subscribes')->controller(SubscribeController::class)->group(function () {
         Route::get('/index', 'index')->middleware(['permission:show_all_subscribes']);
+        Route::get('/filter/{status}', 'filter');//->middleware(['permission:filter_subscribe']);
         Route::post('/store', 'store')->middleware(['permission:create_subscribe']);
         Route::put('/update_subscription_status/{subscribe}', 'update_subscription_status')->middleware(['permission:update_subscription_status']);
         Route::delete('/destroy/{subscribe}', 'destroy')->middleware(['permission:delete_subscribe']);

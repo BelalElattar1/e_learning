@@ -20,10 +20,7 @@ class SubscribeResource extends JsonResource
             'end'                  => $this->when($this->end !== null, $this->end),
             'status'               => $this->status,
             'reason_for_rejection' => $this->when($this->reason_for_rejection !== null, $this->reason_for_rejection),
-            'teacher_name'         => $this->when(
-                $this->relationLoaded('teacher'), 
-                fn () => $this->teacher->user->name
-            ),
+            'teacher_name'         => $this->teacher->user->name
         ];
     }
 }

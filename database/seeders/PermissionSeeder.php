@@ -38,6 +38,7 @@ class PermissionSeeder extends Seeder
             'create_subscribe',
             'update_subscription_status',
             'delete_subscribe',
+            'filter_subscribe',
 
             // Manage Courses
             'creat_course',

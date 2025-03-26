@@ -9,20 +9,38 @@ use App\Http\Resources\SubscribeResource;
 
 class SubscribeService {
 
+    public function filter($status) {
+
+        $user = auth()->user();
+    
+        $query = Subscribe::with('teacher')->where('status', $status);
+    
+        if ($user->type == 'teacher') {
+            $query->where('teacher_id', $user->teacher->id);
+        }
+    
+        $subscribes = $query->get();
+
+        if ($subscribes->isEmpty()) {
+            throw new Exception('Not Found');
+        }
+    
+        return SubscribeResource::collection($subscribes);
+        
+    }
+    
+
     public function index() {
 
         $user = auth()->user();
-        if($user->type == 'teacher') {
 
-            $subscribes = Subscribe::where('teacher_id', $user->teacher->id)->get();
-            return SubscribeResource::collection($subscribes);
+        $query = Subscribe::with('teacher');
 
-        } else {
-
-            $subscribes = Subscribe::with('teacher')->get();
-            return SubscribeResource::collection($subscribes);
-
+        if ($user->type == 'teacher') {
+            $query->where('teacher_id', $user->teacher->id);
         }
+
+        return SubscribeResource::collection($query->get());
 
     }
 

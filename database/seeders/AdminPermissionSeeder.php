@@ -35,6 +35,7 @@ class AdminPermissionSeeder extends Seeder
             'create_subscribe',
             'update_subscription_status',
             'delete_subscribe',
+            'filter_subscribe',
 
             // Manage Charges
             'show_all_charges',

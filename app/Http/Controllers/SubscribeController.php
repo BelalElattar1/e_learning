@@ -20,12 +20,34 @@ class SubscribeController extends Controller
         $this->subscribe_service = $subscribe_service;
     }
 
+    public function filter($status) {
+
+        if (!in_array($status, ['active', 'pending', 'rejected', 'expired'])) {
+            throw new Exception('Invalid status value');
+        }
+        
+        try {
+
+            $data = $this->subscribe_service->filter($status);
+            return $this->response('Subscriptions have been filtered', 200, $data);
+
+
+        } catch(Exception $e) {
+
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+
+        }
+
+    }
+
     public function index() {
 
         try {
 
             $data = $this->subscribe_service->index();
-            return $this->response('Show All Subscribes', 201, $data);
+            return $this->response('Show All Subscribes', 200, $data);
 
 
         } catch(Exception $e) {
