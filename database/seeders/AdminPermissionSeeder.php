@@ -26,6 +26,11 @@ class AdminPermissionSeeder extends Seeder
             'update_teacher',
             'delete_teacher',
 
+            // Manage Materials
+            'create_material',
+            'update_material',
+            'delete_material',
+
             // Manage User
             'get_all_students_inactive',
             'student_activation',

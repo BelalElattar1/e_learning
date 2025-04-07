@@ -15,6 +15,7 @@ use App\Http\Controllers\{
     CategoryController,
     QuestionController,
     SectionController,
+    MaterialController,
 };
 
 use App\Models\{
@@ -52,6 +53,13 @@ Route::group(['middleware' => 'JwtAuth'], function () {
     Route::prefix('images')->controller(ImageController::class)->group(function () {
         Route::post('/get_private_image/{folder}/{filename}', 'get_private_image');
     });
+
+    // Materials Controller
+    Route::prefix('materials')->controller(MaterialController::class)->group(function () {
+        Route::post('/store', 'store');//->middleware(['permission:create_material']);
+        Route::put('/update/{material}', 'update');//->middleware(['permission:update_material']);
+        Route::delete('/destroy/{material}', 'destroy');//->middleware(['permission:delete_material']);
+    });    
 
     // Subscribes Controller
     Route::prefix('subscribes')->controller(SubscribeController::class)->group(function () {
@@ -138,6 +146,10 @@ Route::get('mayors/index', function () {
 });
 
 // Materials Controller
-Route::get('materials/index', function () {
-    return Material::pluck('name');
+Route::get('materials/index/{id?}', function ($id = null) {
+    if ($id) {
+        return Material::where('academic_year_id', $id)->pluck('name');
+    } else {
+        return Material::pluck('name');
+    }
 });
