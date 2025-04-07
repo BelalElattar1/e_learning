@@ -31,7 +31,8 @@ class MaterialSeeder extends Seeder
         foreach($materials as $material) {
 
             Material::create([
-                'name' => $material
+                'name'             => $material,
+                'academic_year_id' => random_int(1, 3)
             ]);
         }
     }

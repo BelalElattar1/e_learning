@@ -14,6 +14,16 @@ use App\Http\Resources\TeacherResource;
 
 class TeacherService {
 
+    public function show_all() {
+
+        $teachers = User::where('type', 'teacher')->with('teacher.material')->get();
+
+        return count($teachers) > 0 
+        ? TeacherResource::collection($teachers) 
+        : throw new Exception('Not Found Teachers');
+
+    }
+
     public function index(Material $material) {
 
         $teachers = User::where('type', 'teacher')

@@ -21,6 +21,23 @@ class TeacherController extends Controller
         $this->teacher_srvice = $teacher_service;
     }
 
+    public function show_all() {
+
+        try {
+
+            $data = $this->teacher_srvice->show_all();
+            return $this->response('Show All Teachers Suc', 201, $data);
+
+        } catch(Exception $e) {
+
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+
+        }
+
+    }
+
     public function index(Material $material) {
 
         try {
