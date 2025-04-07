@@ -5,6 +5,7 @@ use App\Http\Controllers\{
     JWTAuthController,
     PasswordReset,
     AdminController,
+    AnswerController,
     TeacherController,
     ImageController,
     SubscribeController,
@@ -113,6 +114,11 @@ Route::group(['middleware' => 'JwtAuth'], function () {
     Route::prefix('questions')->controller(QuestionController::class)->group(function () {
         Route::post('/store', 'store')->middleware(['permission:create_question']);
         Route::delete('/destroy/{question}', 'destroy')->middleware(['permission:delete_question']);
+    });
+
+    // Answer Controller
+    Route::prefix('answers')->controller(AnswerController::class)->group(function () {
+        Route::post('/answer', 'answer')->middleware(['permission:answer']);
     });
 
 });
