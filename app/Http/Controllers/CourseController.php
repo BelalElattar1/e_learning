@@ -58,7 +58,7 @@ class CourseController extends Controller
 
         try {
 
-            $this->course_service->store($request->all());
+            $this->course_service->store($request);
             return $this->response('The course has been created successfully.');
 
         } catch(Exception $e) {
@@ -76,7 +76,7 @@ class CourseController extends Controller
         try {
 
 
-            $this->course_service->update($request->all(), $course);
+            $this->course_service->update($request, $course);
             return $this->response('The course has been Updated successfully.');
 
         } catch(Exception $e) {

@@ -27,9 +27,14 @@ class AnswerService
 
     private function check_exam_exists($exam_id) {
 
-        $exam = Section::where('id', $exam_id)->where('type', 'exam')->first();
-        throw_unless($exam, new Exception('This is not an exam'));
-        return $exam->teacher_id;
+        $teacher_id = Section::where('id', $exam_id)
+                            ->where('type', 'exam')
+                            ->pluck('teacher_id')
+                            ->first();
+
+        throw_unless($teacher_id, new Exception('This is not an exam'));
+
+        return $teacher_id;
 
     }
 

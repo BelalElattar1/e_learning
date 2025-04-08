@@ -15,11 +15,12 @@ class CourseService {
     public function show(Course $course) {
 
         $user  = auth()->user();
-        $course = Course::with(['categories.sections' => function ($q) use ($user) {
+        $course = Course::where('id', $course->id)
+        ->with(['teacher:id,user_id', 'teacher.user:id,name', 'academic_year:id,name', 'categories.sections' => function ($q) use ($user) {
             if (!$user || $user->type === 'student') {
                 $q->where('is_active', true);
             }
-        }])->where('id', $course->id)->first();
+        }])->first();
 
         return $course ? new CourseResource($course) : throw new Exception('There are no courses');
 
@@ -27,35 +28,34 @@ class CourseService {
 
     public function index(Teacher $teacher) {
 
+        $query = Course::select('id', 'title', 'image', 'price', 'description', 'academic_year_id', 'teacher_id')
+                ->where('teacher_id', $teacher->id)
+                ->with(['academic_year:id,name', 'teacher:id,user_id', 'teacher.user:id,name']);
+
         try {
 
             JWTAuth::parseToken()->authenticate();
             $user = auth()->user();
     
-            $courses = match ($user->type) {
-
-                'student' => Course::whereRelation('teacher', 'is_subscriber', true)
-                            ->whereDoesntHave('buyings', fn($q) => $q->where('student_id', $user->student->id))
-                            ->where('teacher_id', $teacher->id)
-                            ->where('academic_year_id', $user->student->academic_year_id)
-                            ->with('academic_year', 'teacher')->get(),
-    
-                'teacher' => Course::where('teacher_id', $user->teacher->id)
-                            ->with('academic_year', 'teacher')->get(),
-    
-                default => Course::where('teacher_id', $teacher->id)->with('academic_year', 'teacher')->get(),
+            match ($user->type) {
+                'student' => $query->whereRelation('teacher', 'is_subscriber', true)
+                            ->whereDoesntHave('buyings', fn ($q) => $q->where('student_id', $user->student->id))
+                            ->where('academic_year_id', $user->student->academic_year_id),
                 
+                'teacher' => $query->where('teacher_id', $user->teacher->id),
+
+                default   => $query
             };
     
         } catch (JWTException $e) {
 
-            $courses = Course::whereRelation('teacher', 'is_subscriber', true)
-                    ->where('teacher_id', $teacher->id)
-                    ->with('academic_year', 'teacher')->get();
+            $query->whereRelation('teacher', 'is_subscriber', true);
 
         }
-        
-        return count($courses) > 0 ? CourseResource::collection($courses) : throw new Exception('There are no courses');
+
+        $courses = $query->get();
+        abort_if($courses->isEmpty(), 404, 'There are no courses');
+        return CourseResource::collection($courses);
 
     }
 
@@ -63,11 +63,8 @@ class CourseService {
 
         $user = auth()->user();
         Course::create([
-            'title'            => $request['title'],
-            'description'      => $request['description'],
+            ...$request->only(['title', 'description', 'price', 'academic_year_id']),
             'image'            => store_image_public($request['image'], 'courses'),
-            'price'            => $request['price'],
-            'academic_year_id' => $request['academic_year_id'],
             'teacher_id'       => $user->teacher->id
         ]);
 
@@ -76,24 +73,13 @@ class CourseService {
     public function update($request, Course $course) {
 
         $user = auth()->user();
-        $course = Course::where('id', $course->id)->where('teacher_id', $user->teacher->id)->first();
-        if($course) {
+        abort_if($course->teacher_id !== $user->teacher->id, 404, 'You do not have permission to modify this course or it does not exist.');
 
-            Storage::disk('public')->delete("$course->image");
-            $course->update([
-                'title'            => $request['title'],
-                'description'      => $request['description'],
-                'image'            => store_image_public($request['image'], 'courses'),
-                'price'            => $request['price'],
-                'academic_year_id' => $request['academic_year_id'],
-                'teacher_id'       => $user->teacher->id
-            ]);
-
-        } else {
-
-            throw new Exception('You do not have permission to modify this course or it does not exist.');
-
-        }
+        Storage::disk('public')->delete($course->image);
+        $course->update([
+            ...$request->only(['title', 'description', 'price', 'academic_year_id']),
+            'image'            => store_image_public($request['image'], 'courses')
+        ]);
 
     }
 

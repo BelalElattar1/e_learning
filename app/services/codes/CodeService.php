@@ -16,18 +16,11 @@ class CodeService
             'teacher_id' => auth()->user()->teacher->id
         ]);
 
-        if($code) {
-
-            return [
-                'code'  => $code->code,
-                'price' => $code->price
-            ];
-
-        } else {
-
-            throw new Exception('An error occurred. Please try again.');
-
-        }
+        abort_if(!$code, 404, 'An error occurred. Please try again.');
+        return [
+            'code'  => $code->code,
+            'price' => $code->price
+        ];
 
     }
 

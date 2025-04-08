@@ -24,6 +24,7 @@ class WalletResource extends JsonResource
                 $this->relationLoaded('student'), 
                 fn () => $this->student->user->name
             ),
+            'created_at' => $this->created_at->format('Y-m-d')
         ];
     }
 }

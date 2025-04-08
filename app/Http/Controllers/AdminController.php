@@ -41,7 +41,7 @@ class AdminController extends Controller
 
         try {
 
-            $this->admin_service->store($request->all());
+            $this->admin_service->store($request);
             return $this->response('The admin has been created successfullyc');
 
         } catch(Exception $e) {
@@ -58,7 +58,7 @@ class AdminController extends Controller
 
         try {
 
-            $this->admin_service->update($request->all(), $user);
+            $this->admin_service->update($request, $user);
             return $this->response('The admin has been Updated successfullyc');
 
         } catch(Exception $e) {

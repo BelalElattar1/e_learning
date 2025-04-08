@@ -9,13 +9,10 @@ class AuthService {
 
     public function login($request) {
 
-        $credentials = [
-            'email' => $request['email'],
-            'password' => $request['password']
-        ];
+        $credentials = $request->only('email', 'password');
 
-        if (! $token = JWTAuth::attempt($credentials)) {
-            throw new Exception('Invalid credentials'); 
+        if (!$token = JWTAuth::attempt($credentials)) {
+            throw new Exception('Invalid credentials');
         }
 
         // Get the authenticated user.
@@ -24,8 +21,6 @@ class AuthService {
         if(!$user->is_active) {
             throw new Exception('This account is not activated. You can contact support'); 
         }
-
-        $token = JWTAuth::fromUser($user);
 
         return [
             'Role'        => $user->type,

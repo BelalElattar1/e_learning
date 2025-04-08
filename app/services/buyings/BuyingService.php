@@ -15,19 +15,20 @@ class BuyingService
     public function my_courses() {
 
         $user = auth()->user();
-        $courses = Course::whereHas('buyings', function ($query) use($user) {
+
+        $courses = Course::whereHas('buyings', function ($query) use ($user) {
             $query->where('student_id', $user->student->id);
-        })->with('academic_year', 'teacher')->get();
+        })
+        ->select('id', 'title', 'image', 'price', 'description', 'academic_year_id', 'teacher_id')
+        ->with([
+            'academic_year:id,name', 
+            'teacher:id,user_id',
+            'teacher.user:id,name' 
+        ])
+        ->get();
 
-        if(count($courses) > 0) {
-
-            return CourseResource::collection($courses);
-            
-        } else {
-
-            throw new Exception('Not Found Your Courses');
-
-        }
+        abort_if($courses->isEmpty(), 404, 'Not Found Your Courses');
+        return CourseResource::collection($courses);
 
     }
 
@@ -35,13 +36,14 @@ class BuyingService
 
         throw_unless($course->teacher->is_subscriber, new Exception('This course cannot be purchased now.'));
 
+        abort_if(
+            Buying::where('student_id', auth()->user()->student->id)->where('course_id', $course->id)->exists(),
+            404,
+            'You are already enrolled in this course'
+        );
+        
         $user = auth()->user();
-        $buying = Buying::where('student_id', $user->student->id)->where('course_id', $course->id)->first();
         $wallet = Wallet::where('student_id', $user->student->id)->where('teacher_id', $course->teacher_id)->first();
-
-        if($buying) {
-            throw new Exception('You are already enrolled in this course');
-        }
 
         throw_unless($wallet && $wallet->price >= $course->price, new Exception('Your balance is not enough'));
 

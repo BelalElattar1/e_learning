@@ -11,29 +11,21 @@ class AdminService {
 
     public function index() {
 
-        $admins = User::where('type', 'admin')->get();
-        if(count($admins) > 0) {
+        $admins = User::where('type', 'admin')
+                ->select('id', 'name', 'email', 'gender', 'is_active')
+                ->get();
 
-            $admins = AdminResource::collection($admins);
-            return $admins;
-
-        } else {
-
-            throw new Exception('Not Found Admins');
-
-        }
+        abort_if($admins->isEmpty(), 404, 'No admins found');
+        return AdminResource::collection($admins);
 
     }
 
     public function store($request) {
         
         $admin = User::create([
-            'name'      => $request['name'],
-            'email'     => $request['email'],
-            'password'  => Hash::make($request['password']),
-            'gender'    => $request['gender'],
-            'type'      => 'admin',
-            'is_active' => $request['is_active']
+            ...$request->only(['name', 'email', 'gender', 'is_active']),
+            'password' => Hash::make($request['password']),
+            'type'     => 'admin',
         ]);
         $admin->assignRole('admin');
         
@@ -41,21 +33,18 @@ class AdminService {
 
     public function update($request, User $user) {
 
-        $user = User::where('id', $user->id)->where('type', 'admin')->first();
+        abort_if($user->type !== 'admin', 404, 'User is not an admin');
         $user->update([
-            'name'      => $request['name'],
-            'email'     => $request['email'],
-            'password'  => Hash::make($request['password']),
-            'gender'    => $request['gender'],
-            'type'      => 'admin',
-            'is_active' => $request['is_active']
+            ...$request->only(['name', 'email', 'gender', 'is_active']),
+            'password' => Hash::make($request['password']),
+            'type'     => 'admin',
         ]);
 
     }
 
     public function destroy(User $user) {
 
-        $user = User::where('id', $user->id)->where('type', 'admin')->first();
+        abort_if($user->type !== 'admin', 404, 'User is not an admin');
         $user->delete();
 
     }

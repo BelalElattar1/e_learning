@@ -21,8 +21,8 @@ class CourseResource extends JsonResource
             'image'        => "storage/$this->image",
             'price'        => $this->price,
             'description'  => $this->description,
-            'year_name'    => $this->academic_year->name,
-            'teacher_name' => $this->teacher->user->name,
+            'year_name'    => $this->when($this->relationLoaded('academic_year'), $this->academic_year->name),
+            'teacher_name' => $this->when($this->relationLoaded('teacher'), $this->teacher->user->name),
 
             'categories' => $this->when(
                 $this->relationLoaded('categories'),

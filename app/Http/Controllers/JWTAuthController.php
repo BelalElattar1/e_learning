@@ -27,7 +27,7 @@ class JWTAuthController extends Controller
         
         try {
 
-            $this->student_service->register_student($request->all());
+            $this->student_service->register_student($request);
             return response()->json([
                 'Message' => 'The account has been created successfully. You can contact support to activate the account'
             ], 201);
@@ -48,7 +48,7 @@ class JWTAuthController extends Controller
 
         try {
 
-            $data =  $this->auth_service->login($request->all());
+            $data =  $this->auth_service->login($request);
             return response()->json([
                 'data' => $data
             ]);

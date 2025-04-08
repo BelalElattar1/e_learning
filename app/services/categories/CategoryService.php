@@ -13,20 +13,12 @@ class CategoryService
 
         $user   = auth()->user();
         $course = Course::where('id', $request['course_id'])->where('teacher_id', $user->teacher->id)->exists();
-        if($course) {
+        abort_if(!$course, 404, 'This course is not yours.');
 
-            Category::create([
-                'name'       => $request['name'],
-                'title'      => $request['title'],
-                'course_id'  => $request['course_id'],
-                'teacher_id' => $user->teacher->id
-            ]);
-
-        } else {
-
-            throw new Exception('This course is not yours.');
-
-        }
+        Category::create([
+            ...$request->only(['name', 'title', 'course_id']),
+            'teacher_id' => $user->teacher->id
+        ]);
 
     }
 
@@ -34,18 +26,11 @@ class CategoryService
 
         $user     = auth()->user();
         $category = Category::where('id', $category->id)->where('teacher_id', $user->teacher->id)->first();
-        if($category) {
+        abort_if(!$category, 404, 'This Category is not yours.');
 
-            $category->update([
-                'name'  => $request['name'],
-                'title' => $request['title']
-            ]);
-
-        } else {
-
-            throw new Exception('This Category is not yours.');
-
-        }
+        $category->update([
+            ...$request->only(['name', 'title']),
+        ]);
 
     }
 
@@ -53,15 +38,9 @@ class CategoryService
 
         $user     = auth()->user();
         $category = Category::where('id', $category->id)->where('teacher_id', $user->teacher->id)->first();
-        if($category) {
 
-            $category->delete();
-
-        } else {
-
-            throw new Exception('This Category is not yours.');
-
-        }
+        abort_if(!$category, 404, 'This Category is not yours.');
+        $category->delete();
 
     }
 

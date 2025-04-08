@@ -22,20 +22,9 @@ class ChargeService
 
             $this->create_charge($code, $user);
             $this->create_wallet($code, $user);
-
-            // بحط اي فلوس بتتشحن للمدرس ده عشان يبقى عارف كل الفلوس اللي دخلت من اول ما دخل الموقع
-            $code->teacher->user->update([
-                'wallet' => $code->teacher->user->wallet + $code->price
-            ]);
-
-            // بحط اي فلوس الطالب ده شحنها عشان يعرف التوتال بتاعه كام
-            $user->update([
-                'wallet' => $user->wallet + $code->price
-            ]);
-
-            $code->update([
-                'is_active' => 0
-            ]);
+            $this->update_teacher_wallet($code);
+            $this->update_user_wallet($code, $user);
+            $code->update(['is_active' => 0]);
 
         });
 
@@ -54,80 +43,71 @@ class ChargeService
 
     private function create_wallet(Code $code, $user) {
 
-        $wallet = Wallet::where('student_id', $user->student->id)->where('teacher_id', $code->teacher->id)->first();
-        if($wallet) {
+        $wallet = Wallet::firstOrCreate([
+            'student_id' => $user->student->id, 
+            'teacher_id' => $code->teacher->id
+        ]);
+        $wallet->increment('price', $code->price);
 
-            $wallet->update([
-                'price' => $wallet->price + $code->price
-            ]);
+    }
 
-        } else {
-
-            Wallet::create([
-                'price'      => $code->price,
-                'teacher_id' => $code->teacher->id,
-                'student_id' => $user->student->id
-            ]);
-
-        }
-
+    private function update_teacher_wallet(Code $code) {
+        $code->teacher->user->increment('wallet', $code->price);
+    }
+    
+    private function update_user_wallet(Code $code, $user) {
+        $user->increment('wallet', $code->price);
     }
 
     public function show_all_charges() {
 
         $user = auth()->user();
-        if($user->type == "student") {
-
-            $charges = Charge::with('teacher')->where('student_id', $user->student->id)->get();
-
-        } elseif($user->type == "teacher") {
-
-            $charges = Charge::with('student')->where('teacher_id', $user->teacher->id)->get();
-
+        $query = Charge::select('price', 'code', 'student_id', 'teacher_id', 'created_at');
+        
+        if ($user->type == "student") {
+            $query->where('student_id', $user->student->id)->with(['teacher:id,user_id', 'teacher.user:id,name']);
+        } elseif ($user->type == "teacher") {
+            $query->where('teacher_id', $user->teacher->id)->with(['student:id,user_id', 'student:user:id,name']);
         } else {
 
-            $charges = Charge::with('teacher', 'student')->get();
+            $query->with([
+                'teacher:id,user_id', 
+                'teacher.user:id,name',
+                'student:id,user_id',
+                'student:user:id,name'
+            ]);
 
         }
 
-        if(count($charges) > 0) {
-
-            return ChargeResource::collection($charges);
-
-        } else {
-
-            throw new Exception('Not Found');
-
-        }
+        $charges = $query->get();
+        abort_if($charges->isEmpty(), 404, 'Not Found');
+        return ChargeResource::collection($charges);
 
     }
 
     public function show_all_wallets() {
 
         $user = auth()->user();
-        if($user->type == "student") {
-
-            $wallets = Wallet::with('teacher')->where('student_id', $user->student->id)->get();
-
-        } elseif($user->type == "teacher") {
-
-            $wallets = Wallet::with('student')->where('teacher_id', $user->teacher->id)->get();
-
+        $query = Wallet::select('price', 'student_id', 'teacher_id', 'created_at');
+        
+        if ($user->type == "student") {
+            $query->where('student_id', $user->student->id)->with(['teacher:id,user_id', 'teacher.user:id,name']);
+        } elseif ($user->type == "teacher") {
+            $query->where('teacher_id', $user->teacher->id)->with(['student:id,user_id', 'student:user:id,name']);
         } else {
 
-            $wallets = Wallet::with('teacher', 'student')->get();
+            $query->with([
+                'teacher:id,user_id', 
+                'teacher.user:id,name',
+                'student:id,user_id',
+                'student:user:id,name'
+            ]);
 
         }
 
-        if(count($wallets) > 0) {
-
-            return WalletResource::collection($wallets);
-
-        } else {
-
-            throw new Exception('Not Found');
-
-        }
+        $wallets = $query->get();
+        abort_if($wallets->isEmpty(), 404, 'Not Found');
+        return WalletResource::collection($wallets);
 
     }
 }
