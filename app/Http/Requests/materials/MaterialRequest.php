@@ -13,13 +13,9 @@ class MaterialRequest extends BaseRequest
 
     public function rules()
     {
-        $isUpdate = $this->isMethod('PUT');
-
         return [
             'name'             => ['required', 'string', 'max:20'],
-            'academic_year_id' => $isUpdate
-                ? ['prohibited']
-                : ['required', 'integer', 'exists:academic_years,id'],
+            'academic_year_id' => ['required', 'integer', 'exists:academic_years,id']
         ];
     }
 }

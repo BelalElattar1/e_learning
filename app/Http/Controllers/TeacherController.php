@@ -59,7 +59,7 @@ class TeacherController extends Controller
 
         try {
 
-            $this->teacher_srvice->store($request->all());
+            $this->teacher_srvice->store($request);
             return response()->json([
                 'Message' => 'The teacher was created successfully.'
             ], 201);
@@ -78,7 +78,7 @@ class TeacherController extends Controller
 
         try {
 
-            $this->teacher_srvice->update($request->all(), $user);
+            $this->teacher_srvice->update($request, $user);
             return response()->json([
                 'Message' => 'The teacher was Updated successfully.'
             ], 201);

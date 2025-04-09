@@ -16,24 +16,24 @@ class TeacherService {
 
     public function show_all() {
 
-        $teachers = User::where('type', 'teacher')->with('teacher.material')->get();
+        $teachers = User::select('id', 'name', 'email', 'gender')
+                    ->where('type', 'teacher')
+                    ->with(['teacher:user_id,material_id,phone_number,is_subscriber', 'teacher.material:id,name'])
+                    ->get();
 
-        return count($teachers) > 0 
-        ? TeacherResource::collection($teachers) 
-        : throw new Exception('Not Found Teachers');
+        return $teachers ? TeacherResource::collection($teachers) : throw new Exception('Not Found Teachers');
 
     }
 
     public function index(Material $material) {
 
-        $teachers = User::where('type', 'teacher')
-        ->whereRelation('teacher', 'material_id', $material->id)
-        ->with('teacher.material')
-        ->get();
+        $teachers = User::select('id', 'name', 'email', 'gender')
+                    ->where('type', 'teacher')
+                    ->whereRelation('teacher', 'material_id', $material->id)
+                    ->with(['teacher:user_id,material_id,phone_number,is_subscriber', 'teacher.material:id,name'])
+                    ->get();
 
-        return count($teachers) > 0 
-        ? TeacherResource::collection($teachers) 
-        : throw new Exception('Not Found Teachers');
+        return $teachers ? TeacherResource::collection($teachers) : throw new Exception('Not Found Teachers');
 
     }
 
@@ -53,10 +53,8 @@ class TeacherService {
     private function create_user($request) {
 
         return User::create([
-            'name'     => $request['name'],
-            'email'    => $request['email'],
+            ...$request->only(['name', 'email', 'gender']),
             'password' => Hash::make($request['password']),
-            'gender'   => $request['gender'],
             'type'     => 'teacher',
             'is_active' => 1
         ]);
@@ -66,9 +64,8 @@ class TeacherService {
     private function create_teacher($request, User $user) {
 
         return Teacher::Create([
-            'phone_number' => $request['phone_number'],
-            'material_id'  => $request['material_id'],
-            'user_id'      => $user->id
+            ...$request->only(['phone_number', 'material_id']),
+            'user_id' => $user->id
         ]);
 
     }
@@ -86,25 +83,23 @@ class TeacherService {
     }
 
     public function update($request, User $user) {
-
-        $user = User::where('id', $user->id)->where('type', 'teacher')->first();
+        
+        abort_if($user->type !== 'teacher', 404, 'User is not an teacher');
         $user->update([
-            'name'     => $request['name'],
-            'email'    => $request['email'],
-            'password' => Hash::make($request['password']),
-            'gender'   => $request['gender']
+            ...$request->only(['name', 'email', 'gender']),
+            'password' => Hash::make($request['password'])
         ]);
 
         $user->teacher->update([
-            'phone_number' => $request['phone_number'],
-            'material_id'  => $request['material_id']
+            ...$request->only(['phone_number', 'material_id']),
         ]);
 
     }
 
     public function destroy(User $user) {
 
-        User::where('id', $user->id)->where('type', 'teacher')->update([
+        abort_if($user->type !== 'teacher', 404, 'User is not an teacher');
+        $user->update([
             'is_active' => 0
         ]);
 

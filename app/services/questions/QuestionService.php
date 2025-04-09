@@ -14,7 +14,7 @@ class QuestionService
 
         DB::transaction(function () use ($request) { 
 
-            $teacher = auth()->user()->teacher->id;
+            $teacher  = auth()->user()->teacher->id;
             $question = $this->create_question($request, $teacher);
             $this->create_chooses($request, $question, $teacher);
 
@@ -50,16 +50,9 @@ class QuestionService
     public function destroy(Question $question) {
 
         $teacher = auth()->user()->teacher->id;
-        if($question->teacher_id == $teacher) {
+        throw_unless($question->teacher_id == $teacher, new Exception('This is not your exam'));
+        $question->delete();
 
-            $question->delete();
-
-        } else {
-
-            throw new Exception('This is not your exam');
-
-        }
-        
     }
 
 }

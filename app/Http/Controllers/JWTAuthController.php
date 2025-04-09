@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\services\auth\AuthService;
 use App\services\students\StudentService;
@@ -106,11 +107,11 @@ class JWTAuthController extends Controller
 
     }
 
-    public function student_activation($id) {
+    public function student_activation(User $user) {
 
         try {
 
-            $this->student_service->student_activation($id);
+            $this->student_service->student_activation($user);
             return response()->json([
                 'Message' => 'This student has been activated successfully'
             ], 200);

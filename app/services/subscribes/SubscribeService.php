@@ -13,18 +13,15 @@ class SubscribeService {
 
         $user = auth()->user();
     
-        $query = Subscribe::with('teacher')->where('status', $status);
+        $query = Subscribe::with(['teacher:id,user_id', 'teacher.user:id,name'])->where('status', $status);
     
         if ($user->type == 'teacher') {
             $query->where('teacher_id', $user->teacher->id);
         }
     
         $subscribes = $query->get();
+        abort_if($subscribes->isEmpty(), 404, 'Not Found');
 
-        if ($subscribes->isEmpty()) {
-            throw new Exception('Not Found');
-        }
-    
         return SubscribeResource::collection($subscribes);
         
     }
@@ -34,13 +31,16 @@ class SubscribeService {
 
         $user = auth()->user();
 
-        $query = Subscribe::with('teacher');
+        $query = Subscribe::with('teacher:id,user_id', 'teacher.user:id,name');
 
         if ($user->type == 'teacher') {
             $query->where('teacher_id', $user->teacher->id);
         }
 
-        return SubscribeResource::collection($query->get());
+        $subscribes = $query->get();
+        abort_if($subscribes->isEmpty(), 404, 'Not Found');
+
+        return SubscribeResource::collection($subscribes);
 
     }
 
@@ -56,11 +56,7 @@ class SubscribeService {
 
     public function update_subscription_status($request, Subscribe $subscribe) {
 
-        $subscribe = Subscribe::where('id', $subscribe->id)->where('status', 'pending')->first();
-
-        if (!$subscribe) {
-            throw new Exception('This subscription has been modified in the past.');
-        }
+        abort_if($subscribe->status !== 'pending', 404, 'This subscription has been modified in the past.');
 
         $is_subscribed = Subscribe::where('teacher_id', $subscribe->teacher_id)
                         ->where('status', 'active')
@@ -110,16 +106,8 @@ class SubscribeService {
 
     public function destroy(Subscribe $subscribe) {
 
-        $subscribe = Subscribe::where('id', $subscribe->id)->where('status', 'pending')->first();
-        if($subscribe) {
-
-            $subscribe->delete();
-
-        } else {
-
-            throw new Exception('This subscription is not eligible for deletion.');
-
-        }
+        abort_if($subscribe->status !== 'pending', 404, 'This subscription is not eligible for deletion.');
+        $subscribe->delete();
 
     }
 

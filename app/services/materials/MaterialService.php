@@ -11,8 +11,7 @@ class MaterialService
     public function store($request) {
         
         Material::create([
-            'name'             => $request['name'],
-            'academic_year_id' => $request['academic_year_id']
+            ...$request->only(['name', 'academic_year_id'])
         ]);
 
     }
@@ -20,7 +19,7 @@ class MaterialService
     public function update($request, Material $material) {
         
        $material->update([
-            'name' => $request['name']
+            ...$request->only(['name', 'academic_year_id'])
         ]);
 
     }

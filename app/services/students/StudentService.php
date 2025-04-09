@@ -28,9 +28,7 @@ class StudentService {
     private function create_user($request) {
 
         return User::create([
-            'name'     => $request['name'], 
-            'email'    => $request['email'], 
-            'gender'   => $request['gender'],
+            ...$request->only(['name', 'email', 'gender']),
             'password' => Hash::make($request['password'])
         ]);
 
@@ -39,58 +37,32 @@ class StudentService {
     private function create_student($request, User $user) {
 
         return Student::create([
-            'phone_number'      => $request['phone_number'],
-            'father_phone'      => $request['father_phone'],
-            'mother_phone'      => $request['mother_phone'],
-            'school_name'       => $request['school_name'],
-            'father_job'        => $request['father_job'],
-            'card_photo'        => store_image($request['card_photo'], 'cards'),
-            'mayor_id'          => $request['mayor_id'],
-            'academic_year_id'  => $request['academic_year_id'],
-            'user_id'           => $user->id
+            ...$request->only(['phone_number', 'father_phone', 'mother_phone', 'school_name', 'father_job', 'mayor_id', 'academic_year_id']),
+            'card_photo' => store_image($request['card_photo'], 'cards'),
+            'user_id'    => $user->id
         ]);
 
     }
 
     public function get_student() {
 
-        try {
+        throw_unless($user = JWTAuth::parseToken()->authenticate(), new Exception('User not found'));
 
-            if (! $user = JWTAuth::parseToken()->authenticate()) {
-                throw new Exception('User not found');
-            }
-
-            $user = new StudentResource($user->load('student.academic_year', 'student.mayor'));
-            return $user;
-
-        } catch (JWTException $e) {
-
-            throw new Exception('Invalid token'); 
-
-        }
+        return new StudentResource($user->load('student', 'student.academic_year:id,name', 'student.mayor:id,name'));
 
     }
 
     public function get_all_students_inactive() {
 
-        $users = User::where('is_active', 0)->where('type', 'student')->with('student.academic_year', 'student.mayor')->get();
-        $users = StudentResource::collection($users);
-
-        if(count($users) > 0) {
-
-            return $users;
-
-        } else {
-
-            throw new Exception('There are no inactive students');
-
-        }  
+        $users = User::select('id', 'name', 'email')->where('is_active', 0)->where('type', 'student')->with('student', 'student.academic_year:id,name', 'student.mayor:id,name')->get();
+        return $users ? StudentResource::collection($users) : throw new Exception('There are no inactive students'); 
 
     }
 
-    public function student_activation($id) {
-                
-        User::findOrFail($id)->update([
+    public function student_activation(User $user) {
+       
+        abort_if($user->type !== 'student', 404, 'User is not an student');
+        $user->update([
             'is_active' => 1
         ]);
 

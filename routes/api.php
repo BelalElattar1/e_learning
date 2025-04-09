@@ -31,7 +31,7 @@ Route::group(['middleware' => 'JwtAuth'], function () {
     Route::prefix('user')->controller(JWTAuthController::class)->group(function () {
         Route::get('/show', 'get_student');
         Route::get('/get_all_students_inactive', 'get_all_students_inactive')->middleware(['permission:get_all_students_inactive']);
-        Route::put('/student_activation/{id}', 'student_activation')->middleware(['permission:student_activation']);
+        Route::put('/student_activation/{user}', 'student_activation')->middleware(['permission:student_activation']);
         Route::post('/logout', 'logout');
     });
 
@@ -57,15 +57,15 @@ Route::group(['middleware' => 'JwtAuth'], function () {
 
     // Materials Controller
     Route::prefix('materials')->controller(MaterialController::class)->group(function () {
-        Route::post('/store', 'store');//->middleware(['permission:create_material']);
-        Route::put('/update/{material}', 'update');//->middleware(['permission:update_material']);
-        Route::delete('/destroy/{material}', 'destroy');//->middleware(['permission:delete_material']);
+        Route::post('/store', 'store')->middleware(['permission:create_material']);
+        Route::put('/update/{material}', 'update')->middleware(['permission:update_material']);
+        Route::delete('/destroy/{material}', 'destroy')->middleware(['permission:delete_material']);
     });    
 
     // Subscribes Controller
     Route::prefix('subscribes')->controller(SubscribeController::class)->group(function () {
         Route::get('/index', 'index')->middleware(['permission:show_all_subscribes']);
-        Route::get('/filter/{status}', 'filter');//->middleware(['permission:filter_subscribe']);
+        Route::get('/filter/{status}', 'filter')->middleware(['permission:filter_subscribe']);
         Route::post('/store', 'store')->middleware(['permission:create_subscribe']);
         Route::put('/update_subscription_status/{subscribe}', 'update_subscription_status')->middleware(['permission:update_subscription_status']);
         Route::delete('/destroy/{subscribe}', 'destroy')->middleware(['permission:delete_subscribe']);

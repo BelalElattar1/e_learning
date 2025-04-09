@@ -15,14 +15,13 @@ class PasswordResetService {
 
         PasswordResetCode::whereEmail($request['email'])->delete();
 
-        $code = rand(100000, 999999);
-        PasswordResetCode::create([
+        $code = PasswordResetCode::create([
             'email'      => $request['email'],
-            'code'       => $code,
+            'code'       => rand(100000, 999999),
             'expires_at' => Carbon::now()->addMinutes(10)
         ]);
 
-        Mail::raw("Your Password Reset Code Is: $code", function ($message) use ($request) {
+        Mail::raw("Your Password Reset Code Is: $code->code", function ($message) use ($request) {
             $message->to($request['email'])
                     ->subject('Code Sent Your Email');
         });
@@ -34,11 +33,7 @@ class PasswordResetService {
         $reset = PasswordResetCode::where('email', $request['email'])
                 ->where('code', $request['code'])
                 ->where('expires_at', '>=', Carbon::now())
-                ->first();
-    
-        if(!$reset) {
-            throw new Exception('Invalid Or Expired Reset Code');
-        }
+                ->firstOrFail();
 
         User::whereEmail($reset->email)->update([
             'password' => Hash::make($request['password']),
