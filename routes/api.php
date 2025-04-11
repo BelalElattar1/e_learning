@@ -14,6 +14,7 @@ use App\Http\Controllers\{
     ChargeController,
     BuyingController,
     CategoryController,
+    DegreeController,
     QuestionController,
     SectionController,
     MaterialController,
@@ -119,6 +120,12 @@ Route::group(['middleware' => 'JwtAuth'], function () {
     // Answer Controller
     Route::prefix('answers')->controller(AnswerController::class)->group(function () {
         Route::post('/answer', 'answer')->middleware(['permission:answer']);
+    });
+
+    // Degrees Controller
+    Route::prefix('degrees')->controller(DegreeController::class)->group(function () {
+        Route::get('/show_all_degrees', 'show_all_degrees')->middleware(['permission:show_all_degrees']);
+        Route::get('/show_details_degree/{exam}', 'show_details_degree')->middleware(['permission:show_details_degree']);
     });
 
 });

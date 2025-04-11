@@ -13,6 +13,10 @@ class StudentExam extends Model
         'teacher_id'
     ];
 
+    public function answers() {
+        return $this->hasMany(Answer::class);
+    }
+
     public function exam() {
         return $this->belongsTo(Section::class, 'exam_id', 'id');
     }

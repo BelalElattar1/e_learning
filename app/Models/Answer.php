@@ -12,4 +12,8 @@ class Answer extends Model
         'student_id',
         'student_exam_id'
     ];
+
+    public function choose() {
+        return $this->belongsTo(Choose::class);
+    }
 }

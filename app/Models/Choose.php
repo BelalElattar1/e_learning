@@ -13,6 +13,10 @@ class Choose extends Model
         'teacher_id'
     ];
 
+    public function answers() {
+        return $this->hasMany(Answer::class);
+    }
+
     public function question() {
         return $this->belongsTo(Question::class);
     }
