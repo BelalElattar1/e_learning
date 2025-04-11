@@ -21,7 +21,7 @@ class DegreeService
 
     }
 
-    public function show_details_degree(StudentExam $exam) {
+    public function show_exam_answers(StudentExam $exam) {
 
         abort_if($exam->student_id !== auth()->user()->student->id, 404, 'There is a glitch');
         $answers = Section::select('id')

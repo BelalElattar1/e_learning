@@ -125,7 +125,7 @@ Route::group(['middleware' => 'JwtAuth'], function () {
     // Degrees Controller
     Route::prefix('degrees')->controller(DegreeController::class)->group(function () {
         Route::get('/show_all_degrees', 'show_all_degrees')->middleware(['permission:show_all_degrees']);
-        Route::get('/show_details_degree/{exam}', 'show_details_degree')->middleware(['permission:show_details_degree']);
+        Route::get('/show_exam_answers/{exam}', 'show_exam_answers');//->middleware(['permission:show_exam_answers']);
     });
 
 });

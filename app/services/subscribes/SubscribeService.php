@@ -4,7 +4,9 @@ namespace App\services\subscribes;
 
 use Exception;
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Subscribe;
+use Illuminate\Support\Facades\DB;
 use App\Http\Resources\SubscribeResource;
 
 class SubscribeService {
@@ -65,15 +67,22 @@ class SubscribeService {
 
         $dates = $this->calculate_subscribtion_date($request['status'], $is_subscribed);
 
-        $subscribe->update([
-            'start'                => $dates['start'],
-            'end'                  => $dates['end'],
-            'status'               => $request['status'],
-            
-            'reason_for_rejection' => $request['status'] == 'rejected' 
-                                    ? $request['reason_for_rejection'] 
-                                    : null,
-        ]);
+        DB::transaction(function () use ($dates, $request, $subscribe) {  
+
+            $subscribe->update([
+                'start'                => $dates['start'],
+                'end'                  => $dates['end'],
+                'status'               => $request['status'],
+                'reason_for_rejection' => $request['status'] == 'rejected' ? $request['reason_for_rejection'] : null
+            ]);
+
+            if($request['status'] === 'active') {
+
+                $this->update_owner_wallet();
+
+            }
+
+        });
 
     }
 
@@ -102,6 +111,10 @@ class SubscribeService {
             'end'   => Carbon::parse($is_subscribed->end)->addMonth()->addDay()->format("Y-m-d")
         ];
 
+    }
+
+    private function update_owner_wallet() {
+        User::where('type', 'owner')->increment('wallet', 150);
     }
 
     public function destroy(Subscribe $subscribe) {

@@ -48,7 +48,7 @@ class AdminPermissionSeeder extends Seeder
 
             // Manage Degrees
             'show_all_degrees',
-            'show_details_degree'
+            'show_exam_answers'
             
         ];
 

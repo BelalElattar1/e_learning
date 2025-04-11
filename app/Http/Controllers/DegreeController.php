@@ -35,11 +35,11 @@ class DegreeController extends Controller
 
     }
 
-    public function show_details_degree(StudentExam $exam) {
+    public function show_exam_answers(StudentExam $exam) {
 
         try {
 
-            $data = $this->degree_service->show_details_degree($exam);
+            $data = $this->degree_service->show_exam_answers($exam);
             return $this->response('All your Answers have been successfully fetched.', 201, $data);
 
         } catch(Exception $e) {
