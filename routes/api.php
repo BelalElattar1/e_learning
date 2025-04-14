@@ -159,10 +159,4 @@ Route::get('mayors/index', function () {
 });
 
 // Materials Controller
-Route::get('materials/index/{id?}', function ($id = null) {
-    if ($id) {
-        return Material::where('academic_year_id', $id)->pluck('name');
-    } else {
-        return Material::pluck('name');
-    }
-});
+Route::get('materials/index/{id?}', [MaterialController::class, 'index']);

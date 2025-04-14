@@ -19,6 +19,24 @@ class MaterialController extends Controller
         $this->material_service = $material_service;
     }
 
+    public function index($id = null)
+    {
+
+        try {
+
+            $data = $this->material_service->index($id);
+            return $this->response('All materials have been successfully fetched.', 201, $data);
+
+        } catch(Exception $e) {
+
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+
+        }
+
+    }    
+
     public function store(MaterialRequest $request) {
 
         try {

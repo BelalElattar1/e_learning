@@ -37,7 +37,6 @@ class AdminPermissionSeeder extends Seeder
 
             // Manage Subscribes
             'show_all_subscribes',
-            'create_subscribe',
             'update_subscription_status',
             'delete_subscribe',
             'filter_subscribe',
