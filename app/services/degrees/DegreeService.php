@@ -30,7 +30,10 @@ class DegreeService
         ->with([
             'questions:id,exam_id,name',
             'questions.chooses:id,question_id,name,status',
-            'questions.chooses.answers:choose_id,status'
+            'questions.chooses.answers' => function ($query) use ($exam) {
+                $query->where('student_exam_id', $exam->id)
+                      ->select('choose_id', 'status');
+            }
         ])
         ->get();
         return AnswerResource::collection($answers);

@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\StudentResource;
-use Tymon\JWTAuth\Exceptions\JWTException;
 
 class StudentService {
 
@@ -49,6 +48,13 @@ class StudentService {
         throw_unless($user = JWTAuth::parseToken()->authenticate(), new Exception('User not found'));
 
         return new StudentResource($user->load('student', 'student.academic_year:id,name', 'student.mayor:id,name'));
+
+    }
+
+    public function get_all_students() {
+
+        $users = User::select('id', 'name', 'email')->where('is_active', 1)->where('type', 'student')->with('student', 'student.academic_year:id,name', 'student.mayor:id,name')->get();
+        return $users ? StudentResource::collection($users) : throw new Exception('There are no inactive students');
 
     }
 

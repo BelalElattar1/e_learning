@@ -18,7 +18,7 @@ class TeacherService {
 
         $teachers = User::select('id', 'name', 'email', 'gender')
                     ->where('type', 'teacher')
-                    ->with(['teacher:user_id,material_id,phone_number,is_subscriber', 'teacher.material:id,name'])
+                    ->with(['teacher:id,user_id,material_id,phone_number,is_subscriber', 'teacher.material:id,name'])
                     ->get();
 
         return $teachers ? TeacherResource::collection($teachers) : throw new Exception('Not Found Teachers');
@@ -30,7 +30,7 @@ class TeacherService {
         $teachers = User::select('id', 'name', 'email', 'gender')
                     ->where('type', 'teacher')
                     ->whereRelation('teacher', 'material_id', $material->id)
-                    ->with(['teacher:user_id,material_id,phone_number,is_subscriber', 'teacher.material:id,name'])
+                    ->with(['teacher:id,user_id,material_id,phone_number,is_subscriber', 'teacher.material:id,name'])
                     ->get();
 
         return $teachers ? TeacherResource::collection($teachers) : throw new Exception('Not Found Teachers');

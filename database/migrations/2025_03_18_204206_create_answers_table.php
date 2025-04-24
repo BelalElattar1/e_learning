@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('answers', function (Blueprint $table) {
             $table->id();
             $table->boolean('status');
-            $table->foreignId('student_id')->constrained('users', 'id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('student_id')->constrained('students', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('choose_id')->constrained('chooses', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('student_exam_id')->constrained('student_exams', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();

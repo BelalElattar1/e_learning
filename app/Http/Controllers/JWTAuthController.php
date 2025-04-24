@@ -104,6 +104,25 @@ class JWTAuthController extends Controller
 
         }
 
+    }
+
+    public function get_all_students() {
+
+        try {
+
+            $data = $this->student_service->get_all_students();
+            return response()->json([
+                'data' => $data,
+                'Massege' => 'All students have been successfully recruited'
+            ]);
+
+        } catch (Exception $e) {
+
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+
+        }
 
     }
 

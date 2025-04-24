@@ -34,8 +34,8 @@ class PermissionSeeder extends Seeder
 
             // Manage User
             'get_all_students_inactive',
+            'get_all_students',
             'student_activation',
-            'get_private_image',
 
 
             // Manage Subscribes
