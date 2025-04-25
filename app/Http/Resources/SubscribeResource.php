@@ -19,7 +19,7 @@ class SubscribeResource extends JsonResource
             'start'                => $this->when($this->start !== null, $this->start),
             'end'                  => $this->when($this->end !== null, $this->end),
             'status'               => $this->status,
-            'pay_photo'            => url('/api/images/get_private_image/subscribes/' . $this->pay_photo),
+            'pay_photo'            => 'subscribes/' . $this->pay_photo,
             'reason_for_rejection' => $this->when($this->reason_for_rejection !== null, $this->reason_for_rejection),
             'teacher_name'         => $this->teacher->user->name
         ];
