@@ -18,12 +18,11 @@ use App\Http\Controllers\{
     QuestionController,
     SectionController,
     MaterialController,
-    ReportController,
+    ReportController
 };
 
 use App\Models\{
     AcademicYear,
-    Material,
     Mayor
 };
 
