@@ -32,7 +32,7 @@ class SubscribeService {
     public function index() {
 
         $user = auth()->user();
-
+        
         $query = Subscribe::with('teacher:id,user_id', 'teacher.user:id,name');
 
         if ($user->type == 'teacher') {
@@ -114,7 +114,7 @@ class SubscribeService {
     }
 
     private function update_owner_wallet() {
-        User::where('type', 'owner')->increment('wallet', 150);
+        User::where('id', 1)->where('type', 'owner')->increment('wallet', 150);
     }
 
     public function destroy(Subscribe $subscribe) {

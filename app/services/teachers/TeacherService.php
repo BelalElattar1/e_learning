@@ -44,6 +44,7 @@ class TeacherService {
             $user    = $this->create_user($request);
             $teacher = $this->create_teacher($request, $user);
             $this->create_subscribtion_for_teacher($request, $teacher);
+            $this->update_owner_wallet();
             $user->assignRole('teacher');
 
         });
@@ -80,6 +81,10 @@ class TeacherService {
             'teacher_id' => $teacher->id
         ]);
 
+    }
+
+    private function update_owner_wallet() {
+        User::where('id', 1)->where('type', 'owner')->increment('wallet', 150);
     }
 
     public function update($request, User $user) {
