@@ -53,14 +53,14 @@ class StudentService {
 
     public function get_all_students() {
 
-        $users = User::select('id', 'name', 'email')->where('is_active', 1)->where('type', 'student')->with('student', 'student.academic_year:id,name', 'student.mayor:id,name')->get();
+        $users = User::select('id', 'name', 'email', 'is_active')->where('is_active', 1)->where('type', 'student')->with('student', 'student.academic_year:id,name', 'student.mayor:id,name')->get();
         return $users ? StudentResource::collection($users) : throw new Exception('There are no inactive students');
 
     }
 
     public function get_all_students_inactive() {
 
-        $users = User::select('id', 'name', 'email')->where('is_active', 0)->where('type', 'student')->with('student', 'student.academic_year:id,name', 'student.mayor:id,name')->get();
+        $users = User::select('id', 'name', 'email', 'is_active')->where('is_active', 0)->where('type', 'student')->with('student', 'student.academic_year:id,name', 'student.mayor:id,name')->get();
         return $users ? StudentResource::collection($users) : throw new Exception('There are no inactive students'); 
 
     }
