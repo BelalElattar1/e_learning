@@ -34,4 +34,38 @@ class ReportController extends Controller
 
     }
 
+    public function teacher() {
+
+        try {
+
+            $data = $this->report_service->teacher();
+            return $this->response('All reports were successfully fetched.', 200, $data);
+
+        } catch(Exception $e) {
+
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+
+        }
+
+    }
+
+    public function student() {
+
+        try {
+
+            $data = $this->report_service->student();
+            return $this->response('All reports were successfully fetched.', 200, $data);
+
+        } catch(Exception $e) {
+
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+
+        }
+
+    }
+
 }

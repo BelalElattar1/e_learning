@@ -131,7 +131,9 @@ Route::group(['middleware' => 'JwtAuth'], function () {
 
     // Report Controller
     Route::prefix('reports')->controller(ReportController::class)->group(function () {
-        Route::get('/owner_and_admin', 'owner_and_admin');//->middleware(['permission:_report_owner_and_admin']);
+        Route::get('/owner_and_admin', 'owner_and_admin');//->middleware(['permission:owner_admin_reports']);
+        Route::get('/teacher', 'teacher');//->middleware(['permission:teacher_reports']);
+        Route::get('/student', 'student');//->middleware(['permission:student_reports']);
     });
 
 });
