@@ -86,7 +86,10 @@ class PermissionSeeder extends Seeder
             // Manage Reports
             'owner_admin_reports',
             'teacher_reports',
-            'student_reports'
+            'student_reports',
+
+            // Manage View
+            'view_lecture'
             
         ];
 

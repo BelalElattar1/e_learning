@@ -18,7 +18,8 @@ use App\Http\Controllers\{
     QuestionController,
     SectionController,
     MaterialController,
-    ReportController
+    ReportController,
+    ViewController
 };
 
 use App\Models\{
@@ -128,12 +129,17 @@ Route::group(['middleware' => 'JwtAuth'], function () {
         Route::get('/show_all_degrees', 'show_all_degrees')->middleware(['permission:show_all_degrees']);
         Route::get('/show_exam_answers/{exam}', 'show_exam_answers')->middleware(['permission:show_exam_answers']);
     });
-
+    
     // Report Controller
     Route::prefix('reports')->controller(ReportController::class)->group(function () {
-        Route::get('/owner_and_admin', 'owner_and_admin');//->middleware(['permission:owner_admin_reports']);
-        Route::get('/teacher', 'teacher');//->middleware(['permission:teacher_reports']);
-        Route::get('/student', 'student');//->middleware(['permission:student_reports']);
+        Route::get('/owner_and_admin', 'owner_and_admin')->middleware(['permission:owner_admin_reports']);
+        Route::get('/teacher', 'teacher')->middleware(['permission:teacher_reports']);
+        Route::get('/student', 'student')->middleware(['permission:student_reports']);
+    });
+
+    // Views Controller
+    Route::prefix('views')->controller(ViewController::class)->group(function () {
+        Route::post('/view', 'store')->middleware(['permission:view_lecture']);
     });
 
 });

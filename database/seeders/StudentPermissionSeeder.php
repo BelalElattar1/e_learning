@@ -33,7 +33,10 @@ class StudentPermissionSeeder extends Seeder
             'show_exam_answers',
 
             // Manage Reports
-            'student_reports'
+            'student_reports',
+
+            // Manage View
+            'view_lecture'
             
         ];
 

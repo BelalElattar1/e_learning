@@ -18,6 +18,7 @@ class TeacherReportResource extends JsonResource
             'total_balance'  => $this->total_balance,
             'total_courses'  => $this->total_courses,
             'total_students' => $this->total_students,
+            'lazy_students'  => $this->lazy_students
         ];
     }
 }

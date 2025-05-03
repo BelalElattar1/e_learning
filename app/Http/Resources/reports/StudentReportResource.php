@@ -17,7 +17,7 @@ class StudentReportResource extends JsonResource
         return [
             'total_balance'           => $this->total_balance,
             'total_courses_purchased' => $this->total_courses_purchased,
-            'total_teachers'          => $this->total_teachers,
+            'total_teachers'          => $this->total_teachers
         ];
     }
 }
