@@ -174,3 +174,4 @@ Route::get('mayors/index', function () {
 
 // Materials Controller
 Route::get('materials/index/{id?}', [MaterialController::class, 'index']);
+
