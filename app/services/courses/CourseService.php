@@ -29,7 +29,6 @@ class CourseService {
     public function index(Teacher $teacher) {
 
         $query = Course::select('id', 'title', 'image', 'price', 'description', 'academic_year_id', 'teacher_id')
-                ->where('teacher_id', $teacher->id)
                 ->with(['academic_year:id,name', 'teacher:id,user_id', 'teacher.user:id,name']);
 
         try {
@@ -40,16 +39,17 @@ class CourseService {
             match ($user->type) {
                 'student' => $query->whereRelation('teacher', 'is_subscriber', true)
                             ->whereDoesntHave('buyings', fn ($q) => $q->where('student_id', $user->student->id))
-                            ->where('academic_year_id', $user->student->academic_year_id),
+                            ->where('academic_year_id', $user->student->academic_year_id)
+                            ->where('teacher_id', $teacher->id),
                 
                 'teacher' => $query->where('teacher_id', $user->teacher->id),
 
-                default   => $query
+                default   => $query->where('teacher_id', $teacher->id)
             };
     
         } catch (JWTException $e) {
 
-            $query->whereRelation('teacher', 'is_subscriber', true);
+            $query->whereRelation('teacher', 'is_subscriber', true)->where('teacher_id', $teacher->id);
 
         }
 

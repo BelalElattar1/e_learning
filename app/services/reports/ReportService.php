@@ -74,7 +74,13 @@ class ReportService
                 AND sec.type = 'video'
             LEFT JOIN views v ON v.course_id = c.id AND v.student_id = s.id 
             WHERE p.teacher_id = ? 
-            GROUP BY s.phone_number, s.father_phone, s.mother_phone
+            GROUP BY
+                u.name,
+                s.phone_number,
+                s.father_phone,
+                s.mother_phone,
+                y.name,
+                m.name 
             HAVING COUNT(DISTINCT v.lecture_id) < COUNT(DISTINCT sec.id)
         ", [$teacher_id]);
 

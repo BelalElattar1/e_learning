@@ -158,7 +158,7 @@ Route::get('teachers/show_all', [TeacherController::class, 'show_all']);
 
 // Course Controller
 Route::prefix('courses')->controller(CourseController::class)->group(function () {
-    Route::get('/index/{teacher}', 'index');
+    Route::get('/index/{teacher?}', 'index');
     Route::get('/show/{course}', 'show');
 });
 
