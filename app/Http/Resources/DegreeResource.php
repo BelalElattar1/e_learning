@@ -18,7 +18,9 @@ class DegreeResource extends JsonResource
             'id'                 => $this->id,
             'exam_name'          => $this->exam->name,
             'count_of_questions' => $this->exam->exam_mark,
-            'degree'             => $this->degree
+            'degree'             => $this->degree,
+            'student_name'       => $this->when($this->relationLoaded('student'), $this->student->user->name),
+            'teacher_name'       => $this->when($this->relationLoaded('teacher'), $this->teacher->user->name)
         ];
     }
 }

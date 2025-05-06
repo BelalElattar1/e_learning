@@ -13,9 +13,25 @@ class DegreeService
 
     public function show_all_degrees() {
         
-        $degrees = StudentExam::select('id', 'exam_id', 'degree')
-        ->where('student_id', auth()->user()->student->id)
-        ->with(['exam:id,name,exam_mark'])->get();
+        $user = auth()->user();
+        $query = StudentExam::select('id', 'exam_id', 'degree', 'student_id', 'teacher_id')
+                ->with(['exam:id,name,exam_mark']);
+
+        match ($user->type) {
+
+            'student' => $query->where('student_id', $user->student->id)->with(['teacher:id,user_id', 'teacher.user:id,name']),
+            'teacher' => $query->where('teacher_id', $user->teacher->id)->with(['student:id,user_id', 'student.user:id,name']),
+            
+            default   => $query->with([
+                'teacher:id,user_id', 
+                'teacher.user:id,name',
+                'student:id,user_id',
+                'student.user:id,name'
+            ]) 
+
+        };
+
+        $degrees = $query->get();
         abort_if($degrees->isEmpty(), 404, 'No degrees found');
         return DegreeResource::collection($degrees);
 
@@ -23,7 +39,13 @@ class DegreeService
 
     public function show_exam_answers(StudentExam $exam) {
 
-        abort_if($exam->student_id !== auth()->user()->student->id, 404, 'There is a glitch');
+        $user = auth()->user();
+        match ($user->type) {
+            'student' => abort_if($exam->student_id !== $user->student->id, 404, 'There is a glitch'),
+            'teacher' => abort_if($exam->teacher_id !== $user->teacher->id, 404, 'There is a glitch'),
+            default   => NULL
+        };
+
         $answers = Section::select('id')
         ->where('id', $exam->exam_id)
         ->where('type', 'exam')
