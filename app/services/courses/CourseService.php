@@ -5,12 +5,37 @@ namespace App\services\courses;
 use Exception;
 use App\Models\Course;
 use App\Models\Teacher;
+use App\Models\AcademicYear;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\DB;
 use App\Http\Resources\CourseResource;
 use Illuminate\Support\Facades\Storage;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 class CourseService {
+
+    public function best_seller(AcademicYear $year) {
+
+        return DB::table('courses')
+            ->select(
+                'courses.id',
+                'courses.title',
+                'courses.image',
+                'courses.price',
+                'courses.description',
+                'users.name as Teacher_Name',
+                DB::raw('COUNT(buyings.id) as total_sales')
+            )
+            ->join('buyings', 'courses.id', '=', 'buyings.course_id')
+            ->join('teachers', 'courses.teacher_id', '=', 'teachers.id')
+            ->join('users', 'teachers.user_id', '=', 'users.id')
+            ->where('courses.academic_year_id', $year->id)
+            ->groupBy('courses.id', 'courses.title', 'courses.image', 'courses.price', 'courses.description', 'users.name')
+            ->orderByDesc('total_sales')
+            ->limit(5)
+            ->get();
+
+    }
 
     public function show(Course $course) {
 

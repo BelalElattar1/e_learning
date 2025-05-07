@@ -33,7 +33,7 @@ Route::group(['middleware' => 'JwtAuth'], function () {
     Route::prefix('user')->controller(JWTAuthController::class)->group(function () {
         Route::get('/show', 'get_student');
         Route::get('/get_all_students_inactive', 'get_all_students_inactive')->middleware(['permission:get_all_students_inactive']);
-        Route::get('/get_all_students', 'get_all_students');//->middleware(['permission:get_all_students']);
+        Route::get('/get_all_students', 'get_all_students')->middleware(['permission:get_all_students']);
         Route::put('/student_activation/{user}', 'student_activation')->middleware(['permission:student_activation']);
         Route::post('/logout', 'logout');
     });
@@ -126,8 +126,8 @@ Route::group(['middleware' => 'JwtAuth'], function () {
 
     // Degrees Controller
     Route::prefix('degrees')->controller(DegreeController::class)->group(function () {
-        Route::get('/show_all_degrees', 'show_all_degrees');//->middleware(['permission:show_all_degrees']);
-        Route::get('/show_exam_answers/{exam}', 'show_exam_answers');//->middleware(['permission:show_exam_answers']);
+        Route::get('/show_all_degrees', 'show_all_degrees')->middleware(['permission:show_all_degrees']);
+        Route::get('/show_exam_answers/{exam}', 'show_exam_answers')->middleware(['permission:show_exam_answers']);
     });
     
     // Report Controller
@@ -158,6 +158,7 @@ Route::get('teachers/show_all', [TeacherController::class, 'show_all']);
 
 // Course Controller
 Route::prefix('courses')->controller(CourseController::class)->group(function () {
+    Route::get('/best_seller/{year}', 'best_seller');
     Route::get('/index/{teacher?}', 'index');
     Route::get('/show/{course}', 'show');
 });
